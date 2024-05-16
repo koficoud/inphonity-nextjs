@@ -38,7 +38,7 @@ export default function Accepted({ params }: { params: { invitationId: string } 
         <RegisterForms
           invitationId={params.invitationId}
         />
-        {plan.isPaid && (
+        {invitationData && invitationData.status === 'accepted' && (
           <SignContract
             invitationId={params.invitationId}
           />

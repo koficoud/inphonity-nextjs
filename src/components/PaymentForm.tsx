@@ -124,7 +124,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
   //   error: invitationError,
   //   refetch: invitationRefetch
   // } = request;
-  const [register, { isLoading: registerIsLoading, error: registerError }] = useRegisterMutation();
+  const [register, { isLoading: registerIsLoading, error: registerError, isSuccess }] = useRegisterMutation();
   const [initialPayment, {
     isLoading: initialPaymentIsLoading,
     error: initialPaymentError
@@ -143,6 +143,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
     cvvError: "",
     isSubmitting: false,
   });
+  const [mitIframe, setMitIframe] = useState('');
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -219,6 +220,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
         product_id: plan.id!,
         is_esim: shippingData.isEsim,
       }).unwrap();
+
+      invitationRefetch();
 
       if (onlySaveRegister) {
         openModal(
@@ -310,7 +313,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
           </p>
         </div>,
       );
-      
+
       // reset errors
       dispatch(taxDateResetErrors());
       dispatch(accountDataResetErrors());
@@ -605,7 +608,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
             </div>
           </div>,
         );
-            
+
         // reset errors
         dispatch(taxDateResetErrors());
         dispatch(accountDataResetErrors());
@@ -686,6 +689,21 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
     });
   }
 
+  /**
+   * Fetches the iframe to pay with MIT.
+   */
+  const fetchMitIframe = async () => {
+    try {
+      const api = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+      const response = await fetch(`${api}/api/pre-register/${invitationId}/pay-with-mit`);
+      const data = await response.json();
+
+      setMitIframe(data.iframe);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   useEffect(() => {
     if (registerError && 'data' in registerError) {
       const { data } = registerError as ApiValidationError;
@@ -760,10 +778,17 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
     }
   }, [registerError, initialPaymentError]);
 
+  useEffect(() => {
+    if ((isSuccess || accountData.interbankClabe) && !mitIframe) {
+      fetchMitIframe();
+    }
+  }, [isSuccess, accountData]);
+
   const validTdc = (e:any) => {
     let card = e.target.value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1-');
     setForm({ ...form, cardNumber:  card})
   }
+
   return (
     <div className="p-3 md:p-6 lg:p-9 xl:p-12 bg-white" id="PaymentFormSection">
       {/* header */}
@@ -859,135 +884,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
                 <p className={`col-span-12 text-2xl mb-5`}>
                   Pago con Tarjeta de crédito y débito
                 </p>
-                <div className={'col-span-12 my-3'}>
-                  <Image
-                    src={`/img/card-brands.svg`}
-                    alt={`cards`}
-                    width={150}
-                    height={30}
-                    className={`w-40 sm:w-52 md:w-60 lg:w-72 xl:w-80`}
-                  />
-                </div>
-                {/* cardholder name */}
-                <div className={'col-span-12 my-3'}>
-                  <p className="text-base font-light mb-6">
-                    <span className="text-highlight-red">Importante: </span>
-                    Si el pago es rechazado al usar el número que viene en tu tarjeta física, por favor realiza tu compra con el número de tu tarjeta digital.
-                  </p>
-                  <input
-                    type="text"
-                    className={`input input-border-black ${form.cadHolderNameError ? 'input-error' : ''}`}
-                    placeholder={'Nombre del titular'}
-                    value={form.cardHolderName}
-                    onChange={(e) => setForm({ ...form, cardHolderName: e.target.value.replace(/[^A-Za-z\s]+/g, '') })}
-                  />
-                  {form.cadHolderNameError && (
-                    <p className={'text-red-500 text-xs mt-1 mx-3'}>
-                      {form.cadHolderNameError}
-                    </p>
-                  )}
-                </div>
 
-                {/* card number */}
-                <div className={'col-span-12 my-3'}>
-                  <input
-                    value={form.cardNumber}
-                    onChange={validTdc}
-                    type="text"
-                    className={`input input-border-black ${form.cardNumberError ? 'input-error' : ''}`}
-                    placeholder="Número de tarjeta"
-                    maxLength={19}
-                  />
-                  {/* error */}
-                  {form.cardNumberError && (
-                    <p className={'text-red-500 text-xs mt-1 mx-3'}>
-                      {form.cardNumberError}
-                    </p>
-                  )}
-                </div>
+                {mitIframe && (
+                  <iframe src={mitIframe} className="col-span-12 h-[500px] border-0 w-full" />
+                )}
 
-                <div className={'col-span-12 grid grid-cols-12 gap-3 items-center my-3'}>
-                  <div className="col-span-12 lg:col-span-3">
-                    <label className="font-light" htmlFor="">
-                      Fecha de vencimiento
-                    </label>
-                  </div>
-                  {/* expiration date month */}
-                  <div className={'col-span-12 lg:col-span-3'}>
-                    <select
-                      defaultValue={form.expirationDateMonth}
-                      className={`input input-border-black`}
-                      onChange={(e) => setForm({ ...form, expirationDateMonth: e.target.value })}
-                    >
-                      <option disabled value={""}>Mes</option>
-                      {Array.from(Array(12).keys()).map((month) => {
-                        const paddedMonth = (month + 1).toString().padStart(2, '0');
-                        return (
-                          <option
-                            key={month}
-                            value={paddedMonth}
-                          >
-                            {paddedMonth}
-                          </option>
-                        );
-                      })}
-                    </select>
-
-                    {/* error */}
-                    {form.expirationDateMonthError && (
-                      <p
-                        className={'text-red-500 text-xs mt-1 mx-3'}
-                      >
-                        {form.expirationDateMonthError}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* expiration date year */}
-                  <div className={'col-span-12 lg:col-span-3'}>
-                    <select
-                      className={`input input-border-black`}
-                      defaultValue={form.expirationDateYear}
-                      onChange={(e) => setForm({ ...form, expirationDateYear: e.target.value })}
-                    >
-                      <option disabled selected value={""}>Año</option>
-                      {Array.from(Array(10).keys()).map((year) => (
-                        <option
-                          key={year}
-                          value={new Date().getFullYear() + year}
-                        >
-                          {new Date().getFullYear() + year}
-                        </option>
-                      ))}
-                    </select>
-                    {/* error */}
-                    {form.expirationDateYearError && (
-                      <p
-                        className={'text-red-500 text-xs mt-1 mx-3'}
-                      >
-                        {form.expirationDateYearError}
-                      </p>
-                    )}
-                  </div>
-                  {/* cvv */}
-                  <div className={'col-span-12 lg:col-span-3'}>
-                    <input
-                      type="text"
-                      className={`input input-border-black ${form.cvvError ? 'input-error' : ''}`}
-                      placeholder="CVV*"
-                      value={form.cvv}
-                      onChange={(e: { target: { value: any; }; }) => setForm({ ...form, cvv: e.target.value.replace(/\D/g, '') })}
-                    />
-                    {/* error */}
-                    {form.cvvError && (
-                      <p
-                        className={'text-red-500 text-xs mt-1 mx-3'}
-                      >
-                        {form.cvvError}
-                      </p>
-                    )}
-                  </div>
-                </div>
                 <div className="col-span-12 text-3xl flex flex-col mt-10 mx-auto justify-between px-5 w-auto sm:w-[23.125rem] py-[3rem] h-[21.25rem] rounded-2xl border-2 border-black">
                   <div className="flex justify-between mx-auto gap-x-8">
                     <div className="flex flex-col justify-start font-light">
