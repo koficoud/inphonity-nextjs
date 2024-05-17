@@ -3,6 +3,7 @@ import React, {useEffect, useMemo, useRef} from "react";
 import {useAppDispatch, useAppSelector} from "@/lib/hooks";
 import {
   setRfc,
+  setFiscalRegime,
   setName,
   setStreet,
   setExteriorNumber,
@@ -25,6 +26,7 @@ export default function TaxDataForm() {
   const personalData = useAppSelector((state) => state.personalData);
   const fieldsOrder: (keyof typeof taxData)[] = useMemo(() => [
     "rfc",
+    'fiscalRegime',
     "name",
     "street",
     "exteriorNumber",
@@ -46,6 +48,22 @@ export default function TaxDataForm() {
       return false;
     });
   }, [fieldsOrder, taxData]);
+  const [fiscalRegimes, setFiscalRegimes] = React.useState<Array<{value: string; label: string}>>([]);
+
+  /**
+   * Fetch fiscal regimes from API
+   */
+  const fetchFiscalRegimes = async () => {
+    try {
+      const api = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+      const response = await fetch(`${api}/api/tax-data/fiscal-regimes`);
+      const data = await response.json();
+
+      setFiscalRegimes(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(()=>{
     if (taxData.showAccountDataForm){
@@ -64,6 +82,7 @@ export default function TaxDataForm() {
     }
   }, [
     taxData.rfcError,
+    taxData.fiscalRegime,
     taxData.nameError,
     taxData.streetError,
     taxData.exteriorNumberError,
@@ -74,6 +93,10 @@ export default function TaxDataForm() {
     taxData.municipalityError,
   ]);
 
+  useEffect(() => {
+    fetchFiscalRegimes();
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const {name, value} = e.target;
 
@@ -83,6 +106,9 @@ export default function TaxDataForm() {
         if (value.length == 13){
           handleRfc(e);
         }
+        break;
+      case 'fiscalRegime':
+        dispatch(setFiscalRegime(value));
         break;
       case "name":
         dispatch(setName(value.replace(/[^A-Za-z\s]+/g, '')));
@@ -192,7 +218,7 @@ export default function TaxDataForm() {
       <div className={'lg:container mx-auto w-full'}>
         <div className={'grid grid-cols-12 form-card gap-3 sm:gap-4 md:gap-5 lg:gap-6 w-full mx-auto p-6 md:p-8 lg:p-10 xl:p-12'}>
           <div className="col-span-12 flex items-center text-white mb-2">
-            <input 
+            <input
               type="checkbox"
               id={'dontHaveTaxData'}
               className="form-checkbox green-check h-5 w-5 text-green-500"
@@ -203,12 +229,12 @@ export default function TaxDataForm() {
               <span className={`ml-2 inline-block text-black`}>No tengo mi información fiscal a la mano o actualizada</span>
             </label>
           </div>
-         
+
           {/* name */}
           <div
             className={'col-span-12'}
           >
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${taxData.nameError ? 'input-error' : ''}`}
               placeholder={`Nombre completo*`}
@@ -229,7 +255,7 @@ export default function TaxDataForm() {
 
            {/* rfc */}
            <div className={'col-span-12'}>
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${taxData.rfcError ? 'input-error' : ''}`}
               placeholder={`RFC*`}
@@ -251,12 +277,31 @@ export default function TaxDataForm() {
             )}
           </div>
 
+          {/* fiscal regime */}
+          <div className={'col-span-12'}>
+            <select
+              className={`input input-border-black`}
+              value={taxData.fiscalRegime}
+              name={'fiscalRegime'}
+              onChange={handleInputChange}
+            >
+              <option value={''}>Régimen Fiscal*</option>
+              {fiscalRegimes.map((regime, index) => (
+                <option
+                  key={index}
+                  value={regime['value']}
+                >
+                  {regime['label']}
+                </option>
+              ))}
+            </select>
+          </div>
 
           {/* street */}
           <div
             className={'col-span-12'}
           >
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${taxData.streetError ? 'input-error' : ''}`}
               placeholder={`Dirección fiscal - calle*`}
@@ -279,7 +324,7 @@ export default function TaxDataForm() {
           <div
             className={'col-span-6'}
           >
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${taxData.exteriorNumberError ? 'input-error' : ''}`}
               placeholder={`Número exterior*`}
@@ -302,7 +347,7 @@ export default function TaxDataForm() {
           <div
             className={'col-span-6'}
           >
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${taxData.interiorNumberError ? 'input-error' : ''}`}
               placeholder={`Número interior`}
@@ -325,7 +370,7 @@ export default function TaxDataForm() {
            <div
             className={'col-span-6'}
           >
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${taxData.zipCodeError ? 'input-error' : ''}`}
               placeholder={`Código postal*`}
@@ -347,7 +392,7 @@ export default function TaxDataForm() {
 
           {/* neighborhood */}
           <div className={'col-span-6'}>
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${taxData.neighborhoodError ? 'input-error' : ''}`}
               placeholder={`Colonia*`}
@@ -368,7 +413,7 @@ export default function TaxDataForm() {
 
           {/* state */}
           <div className={'col-span-6'}>
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${taxData.stateError ? 'input-error' : ''}`}
               placeholder={`Estado*`}
@@ -391,7 +436,7 @@ export default function TaxDataForm() {
           <div
             className={'col-span-6'}
           >
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${taxData.municipalityError ? 'input-error' : ''}`}
               placeholder={`Municipio/Alcaldía*`}
@@ -412,7 +457,7 @@ export default function TaxDataForm() {
 
           <div className={'col-span-12 flex justify-between'}>
               {/* <div className="flex items-center text-white mb-2 ml-2">
-                <input 
+                <input
                   type="checkbox"
                   id={'myAddressAreEqual'}
                   className="form-checkbox green-check h-5 w-5 text-green-500"

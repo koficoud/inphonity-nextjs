@@ -207,6 +207,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
         address_interior_number: shippingData.interiorNumber,
         address: shippingData.street,
         rfc: taxData.rfc,
+        fiscal_regime: taxData.fiscalRegime,
         name: taxData.name,
         tax_zip_code: taxData.zipCode,
         street: taxData.street,
@@ -784,6 +785,15 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
     }
   }, [isSuccess, accountData]);
 
+  useEffect(() => {
+    if (invitationData?.pre_registration) {
+      handlePayment('card', false)
+        .then(() => {
+          fetchMitIframe();
+        });
+    }
+  }, [plan]);
+
   const validTdc = (e:any) => {
     let card = e.target.value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1-');
     setForm({ ...form, cardNumber:  card})
@@ -918,7 +928,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
                         onClick={() => handlePayment('card', false)}
                         disabled={initialPaymentIsLoading || form.isSubmitting}
                       >
-                        PAGAR
+                        SIGUIENTE
                       </button>
                     </div>
                   </div>

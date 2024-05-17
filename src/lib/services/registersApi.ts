@@ -26,6 +26,7 @@ type RegisterRequest = {
   address_interior_number?: string;
   address: string;
   rfc?: string;
+  fiscal_regime?: string;
   name?: string;
   tax_zip_code?: string;
   street?: string;
@@ -43,9 +44,9 @@ type RegisterRequest = {
 type RegisterResponse = {
   message: string;
 }
- 
+
 export type PaymentMethod =  'card' | 'cash' | 'spei' | 'card-legacy'
- 
+
 type InitialPaymentRequest = {
   invitation_id: number;
   payment_method: PaymentMethod;

@@ -3,6 +3,7 @@ import {Invitation, invitationsApi} from "@/lib/services/invitationsApi";
 
 export interface TaxData {
   rfc: string;
+  fiscalRegime: string;
   rfcError: string;
   name: string;
   nameError: string;
@@ -29,6 +30,7 @@ export interface TaxData {
 
 const initialState: TaxData = {
   rfc: "",
+  fiscalRegime: '',
   rfcError: "",
   name: "",
   nameError: "",
@@ -59,6 +61,7 @@ name: "taxData",
   reducers: {
     resetTaxData: (state) => {
       state.rfc = "";
+      state.fiscalRegime = '';
       state.rfcError = "";
       state.name = "";
       state.nameError = "";
@@ -84,6 +87,7 @@ name: "taxData",
     },
     resetErrors: (state) => {
       state.rfcError = "";
+      state.fiscalRegime = '';
       state.nameError = "";
       state.streetError = "";
       state.exteriorNumberError = "";
@@ -100,6 +104,12 @@ name: "taxData",
     },
     setRfcError: (state, action: PayloadAction<string>) => {
       state.rfcError = action.payload;
+    },
+    setFiscalRegime: (state, action: PayloadAction<string>) => {
+      state.fiscalRegime = action.payload;
+    },
+    setFiscalRegimeError: (state, action: PayloadAction<string>) => {
+      state.fiscalRegime = action.payload;
     },
     setName: (state, action: PayloadAction<string>) => {
       state.name = action.payload;
@@ -170,6 +180,7 @@ name: "taxData",
       const invitation = action.payload;
 
       state.rfc = invitation.pre_registration?.rfc || "";
+      state.fiscalRegime = invitation.pre_registration?.fiscal_regime || '';
       state.name = invitation.pre_registration?.name || "";
       state.street = invitation.pre_registration?.street || "";
       state.exteriorNumber = invitation.pre_registration?.exterior_number || "";
@@ -193,6 +204,8 @@ export const {
   resetTaxData,
   setRfc,
   setRfcError,
+  setFiscalRegime,
+  setFiscalRegimeError,
   setName,
   setNameError,
   setStreet,
