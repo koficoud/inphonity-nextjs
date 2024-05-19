@@ -54,7 +54,7 @@ const maxDate = (currentYear - 18)+ "-" + fixCurrentMonth + "-" + fixCurrentDay;
 export default function PersonalDataForm() {
   const { openModal } = React.useContext(ModalContext);
   const dispatch = useAppDispatch();
-  const [errorForm, SetErrorForm] = React.useState<boolean>(true); 
+  const [errorForm, SetErrorForm] = React.useState<boolean>(true);
   const personalData = useAppSelector((state) => state.personalData);
   const fieldsOrder: (keyof typeof personalData)[] = useMemo(() => [
     'name',
@@ -76,7 +76,7 @@ export default function PersonalDataForm() {
   const inputRefs = useRef<{ [key in keyof typeof personalData]: HTMLInputElement | HTMLSelectElement | null }>({} as { [key in keyof typeof personalData]: HTMLInputElement | null });
   // const isValidForm = useMemo(() => {
   //   return !fieldsOrder.some(field => {
-      
+
   //     if (field.endsWith('Error')) {
   //       return personalData[field as keyof typeof personalData];
   //     }
@@ -127,7 +127,7 @@ export default function PersonalDataForm() {
     const { name, value } = e.target;
     switch (name) {
       case 'name':
-        dispatch(setName(value.replace(/[^a-zA-Z\u00C0-\u017F]+/g, '')));
+        dispatch(setName(value.replace(/[^a-zA-Z\u00C0-\u017F\s]+/g, '')));
         break;
       case 'lastName':
         dispatch(setLastName(value.replace(/[^a-zA-Z\u00C0-\u017F]+/g, '')));
@@ -143,7 +143,7 @@ export default function PersonalDataForm() {
         break;
       case 'occupation':
         dispatch(setOccupation(value));
-        break;      
+        break;
       case 'email':
         dispatch(setEmail(value));
         break;
@@ -300,7 +300,7 @@ export default function PersonalDataForm() {
           Llena los <span className="text-custom-blue"> siguientes datos</span>
         </h3>
         <p className={'text-base text-black text-center'}>
-          <strong className={'font-medium text-custom-blue'}>Importante:</strong> 
+          <strong className={'font-medium text-custom-blue'}>Importante:</strong>
           Ten a la mano tu credencial de elector y comprobante de domicilio
         </p>
       </header>
@@ -309,7 +309,7 @@ export default function PersonalDataForm() {
       <div className={'lg:container mx-auto w-full'}>
         <div className={'grid grid-cols-12 form-card gap-3 sm:gap-4 md:gap-5 lg:gap-6 text-white w-full mx-auto p-6 md:p-8 lg:p-10 xl:p-12'}>
           {/* <div className={'col-span-12'}>
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${personalData.nameError ? 'input-error' : ''}`}
               placeholder="Nombre completo*"
@@ -440,7 +440,7 @@ export default function PersonalDataForm() {
             )}
           </div>
           {/* <div className="col-span-12 sm:col-span-2">
-            <select  
+            <select
               defaultValue=""
               className="input"
               name={'dayDateOfBirth'}
@@ -456,7 +456,7 @@ export default function PersonalDataForm() {
             </select>
           </div>
           <div className="col-span-12 sm:col-span-3">
-            <select  
+            <select
               defaultValue=""
               className="input"
               name={'monthDateOfBirth'}
@@ -472,7 +472,7 @@ export default function PersonalDataForm() {
             </select>
           </div>
           <div className="col-span-12 sm:col-span-3">
-            <select  
+            <select
               defaultValue=""
               className="input"
               name={'yearDateOfBirth'}
@@ -487,7 +487,7 @@ export default function PersonalDataForm() {
               }
             </select>
           </div> */}
-          {/* error 
+          {/* error
           {personalData.dateOfBirthError && (
             <span className="col-span-12 text-center">
               <p className={'text-red-500 text-xs mt-1 mx-3'}>
@@ -497,7 +497,7 @@ export default function PersonalDataForm() {
           )}*/}
           {/* curp */}
           <div className={'col-span-12'}>
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${personalData.curpError ? 'input-error' : ''}`}
               placeholder="CURP*"
@@ -521,7 +521,7 @@ export default function PersonalDataForm() {
 
           {/* gender */}
           <div className={'col-span-12'}>
-            <select  
+            <select
               defaultValue={personalData.gender}
               className={`input input-border-black ${personalData.genderError ? 'input-error' : ''}`}
               name={'gender'}
@@ -552,7 +552,7 @@ export default function PersonalDataForm() {
 
           {/* phone */}
           <div className={'col-span-12'}>
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${personalData.phoneError ? 'input-error' : ''}`}
               placeholder="Teléfono*"
@@ -573,7 +573,7 @@ export default function PersonalDataForm() {
 
           {/* email */}
           <div className={'col-span-12'}>
-            <input 
+            <input
               type="email"
               className={`input input-border-black ${personalData.emailError ? 'input-error' : ''}`}
               placeholder="Correo electrónico*"
@@ -594,7 +594,7 @@ export default function PersonalDataForm() {
 
           {/* occupation */}
           <div className={'col-span-12'}>
-            <select  
+            <select
               defaultValue={personalData.occupation}
               className={`input input-border-black`}
               name={'occupation'}
@@ -673,7 +673,7 @@ export default function PersonalDataForm() {
                     onClick={showModalWithIdentificationInfo}
                   />
                 </div>
-                <input 
+                <input
                   type="file"
                   accept={'image/*'}
                   className={'hidden'}
@@ -730,7 +730,7 @@ export default function PersonalDataForm() {
                     onClick={showModalWithIdentificationInfo}
                   />
                 </div>
-                <input 
+                <input
                   type="file"
                   accept={'image/*'}
                   className={'hidden'}
@@ -788,7 +788,7 @@ export default function PersonalDataForm() {
                       onClick={showModalWithPassportInfo}
                     />
                   </div>
-                  <input 
+                  <input
                     type="file"
                     accept={'image/*'}
                     className={'hidden'}
@@ -838,7 +838,7 @@ export default function PersonalDataForm() {
                   onClick={showModalWithAddressProof}
                 />
               </div>
-              <input 
+              <input
                   type="file"
                   accept={'image/*'}
                   className={'hidden'}
@@ -892,7 +892,7 @@ export default function PersonalDataForm() {
                   onClick={showModalWithTaxStatusProof}
                 />
               </div>
-              <input 
+              <input
                 type="file"
                 accept={'image/*'}
                 className={'hidden'}

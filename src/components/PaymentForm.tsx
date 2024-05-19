@@ -108,7 +108,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
   const taxData = useAppSelector((state) => state.taxData);
   const plan = useAppSelector((state) => state.plan);
   const shippingData = useAppSelector((state) => state.shipping);
-  const shippingCost = 150;
+  const [shippingCost, setShippingCost] = useState(0);
 
   const {
     isLoading: invitationIsLoading,
@@ -798,6 +798,14 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
     let card = e.target.value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1-');
     setForm({ ...form, cardNumber:  card})
   }
+
+  useEffect(() => {
+    if (!shipping.isEsim) {
+      setShippingCost(99)
+    } else {
+      setShippingCost(0)
+    }
+  }, [shipping.isEsim]);
 
   return (
     <div className="p-3 md:p-6 lg:p-9 xl:p-12 bg-white" id="PaymentFormSection">
