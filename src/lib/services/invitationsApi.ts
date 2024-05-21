@@ -114,6 +114,8 @@ export type PreRegistration = {
   id: number;
   id_back_picture: string;
   id_front_picture: string;
+  id_address_picture: string;
+  id_tax_picture: string;
   interbank_clabe: string;
   interior_number: string | null;
   invitation_id: number;

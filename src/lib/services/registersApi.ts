@@ -8,6 +8,8 @@ type RegisterRequest = {
   contact_phone_number: string;
   curp?: string;
   gender?: string;
+  id_address_picture?: string;
+  id_tax_picture?: string;
   bank_name?: string;
   bank_account_number: string;
   bank_account_number_confirmation: string;
@@ -63,6 +65,8 @@ type InitialPaymentResponse = {
   contact_phone_number: string;
   curp?: string;
   gender?: string;
+  id_address_picture?: string;
+  id_tax_picture?: string;
   bank_name?: string;
   bank_account_number?: string;
   interbank_clabe?: string;

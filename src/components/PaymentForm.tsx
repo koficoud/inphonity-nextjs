@@ -185,18 +185,20 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
         contact_phone_number: personalData.phone,
         curp: personalData.curp,
         gender: personalData.gender,
+        date_of_birth: personalData.dateOfBirth,
+        id_front_picture: (personalData.idFrontPicture !== '' ? personalData.idFrontPicture : personalData.idPassportPicture),
+        id_back_picture: personalData.idBackPicture,
+        id_address_picture: personalData.idAddressPicture,
+        id_tax_picture: personalData.idTaxPicture,
+
         bank_name: accountData.bankName,
         bank_account_number: accountData.bankAccountNumber,
         bank_account_number_confirmation: accountData.bankAccountNumber,
         interbank_clabe: accountData.interbankClabe,
         interbank_clabe_confirmation: accountData.interbankClabe,
         email: personalData.email,
-        date_of_birth: personalData.dateOfBirth,
 
         //const id_front_picture = personalData.idFrontPicture !== '' ? personalData.idFrontPicture : 'Otro Valor';
-
-        id_front_picture: (personalData.idFrontPicture !== '' ? personalData.idFrontPicture : personalData.idPassportPicture),
-        id_back_picture: personalData.idBackPicture,
 
         address_zip_code: shippingData.zipCode,
         address_state: shippingData.state,
