@@ -17,7 +17,7 @@ const formatNumber = (number: number, decimals=0) => {
 const PlanCard: React.FC<Plan> = (planData) => {
   const dispatch = useAppDispatch();
   const plan = useAppSelector((state) => state.plan);
-  
+
   const cashback = 0;//TODO
   const commision = planData.commissions?.find(com => com.target_id == plan.id)
   const referralIncome = commision?.referral ?? 0;
@@ -78,7 +78,7 @@ const PlanCard: React.FC<Plan> = (planData) => {
                   MINUTOS
                 </p>
                 <p className="font-medium text-[2rem]">
-                  {planData.minutes}
+                  {planData.minutes === -1 ? <span className={'text-sm'}>ILIMITADOS</span> : planData.minutes}
                 </p>
               </div>
               <div className="card-plan text-center border border-white rounded-[1.25rem] bg-black px-3 py-6 m-1">
@@ -94,7 +94,7 @@ const PlanCard: React.FC<Plan> = (planData) => {
                   SMS
                 </p>
                 <p className="font-medium text-[2rem]">
-                  {planData.sms}
+                  {planData.sms === -1 ? <span className={'text-sm'}>ILIMITADOS</span> : planData.sms}
                 </p>
               </div>
             </div>
