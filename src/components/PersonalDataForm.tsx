@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, {useEffect, useMemo, useRef} from "react";
 import Image from "next/image";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { differenceInYears } from 'date-fns';
+import {useAppDispatch, useAppSelector} from "@/lib/hooks";
+import {differenceInYears} from 'date-fns';
 import {
   setDocType,
   setIdPassportPicture,
@@ -25,34 +25,34 @@ import {
   setLastName,
   setSecondLastName
 } from "@/lib/features/personal-data/personalDataSlice";
-import { ModalContext } from "@/contexts/ModalContext";
+import {ModalContext} from "@/contexts/ModalContext";
 
-const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'));
+const days = Array.from({length: 31}, (_, i) => (i + 1).toString().padStart(2, '0'));
 const months = [
-  { index: 0, name: "Enero" },
-  { index: 1, name: "Febrero" },
-  { index: 2, name: "Marzo" },
-  { index: 3, name: "Abril" },
-  { index: 4, name: "Mayo" },
-  { index: 5, name: "Junio" },
-  { index: 6, name: "Julio" },
-  { index: 7, name: "Agosto" },
-  { index: 8, name: "Septiembre" },
-  { index: 9, name: "Octubre" },
-  { index: 10, name: "Noviembre" },
-  { index: 11, name: "Diciembre" }
+  {index: 0, name: "Enero"},
+  {index: 1, name: "Febrero"},
+  {index: 2, name: "Marzo"},
+  {index: 3, name: "Abril"},
+  {index: 4, name: "Mayo"},
+  {index: 5, name: "Junio"},
+  {index: 6, name: "Julio"},
+  {index: 7, name: "Agosto"},
+  {index: 8, name: "Septiembre"},
+  {index: 9, name: "Octubre"},
+  {index: 10, name: "Noviembre"},
+  {index: 11, name: "Diciembre"}
 ];
 const currentDay = new Date().getDate();
 const currentMonth = new Date().getMonth();
 const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 101 }, (_, i) => currentYear - i);
+const years = Array.from({length: 101}, (_, i) => currentYear - i);
 
-const fixCurrentDay = currentDay<=9 ? "0" + currentDay : currentDay.toString();
-const fixCurrentMonth = currentMonth <=9 ? "0" + (currentMonth+1) : currentMonth+1;
-const maxDate = (currentYear - 18)+ "-" + fixCurrentMonth + "-" + fixCurrentDay;
+const fixCurrentDay = currentDay <= 9 ? "0" + currentDay : currentDay.toString();
+const fixCurrentMonth = currentMonth <= 9 ? "0" + (currentMonth + 1) : currentMonth + 1;
+const maxDate = (currentYear - 18) + "-" + fixCurrentMonth + "-" + fixCurrentDay;
 
 export default function PersonalDataForm() {
-  const { openModal } = React.useContext(ModalContext);
+  const {openModal} = React.useContext(ModalContext);
   const dispatch = useAppDispatch();
   const [errorForm, SetErrorForm] = React.useState<boolean>(true);
   const personalData = useAppSelector((state) => state.personalData);
@@ -71,7 +71,6 @@ export default function PersonalDataForm() {
     'dateOfBirth',
     'dateOfBirthError',
     'idAddressPicture',
-    'idTaxPicture'
   ], []);
   const inputRefs = useRef<{ [key in keyof typeof personalData]: HTMLInputElement | HTMLSelectElement | null }>({} as { [key in keyof typeof personalData]: HTMLInputElement | null });
   // const isValidForm = useMemo(() => {
@@ -88,25 +87,25 @@ export default function PersonalDataForm() {
   //   });
   // }, [fieldsOrder, personalData]);
 
-  useEffect(()=>{
-    if (personalData.showShippingForm){
+  useEffect(() => {
+    if (personalData.showShippingForm) {
       let scrollSection = document.getElementById("ShippingFormSection")?.getBoundingClientRect().top || 0
       window.scrollTo({
         top: window.scrollY + scrollSection,
         behavior: 'smooth'
       });
     }
-  },[personalData.showShippingForm])
+  }, [personalData.showShippingForm])
 
   useEffect(() => {
-    const { docType, idFrontPicture, idBackPicture, idPassportPicture, curpError } = personalData
+    const {docType, idFrontPicture, idBackPicture, idPassportPicture, curpError} = personalData
     //valid docType
-    if (docType=="INE" && (!idFrontPicture || !idBackPicture)){
+    if (docType == "INE" && (!idFrontPicture || !idBackPicture)) {
       SetErrorForm(true)
       return;
     }
 
-    if (docType=="Passport" && !idPassportPicture){
+    if (docType == "Passport" && !idPassportPicture) {
       SetErrorForm(true)
       return;
     }
@@ -117,23 +116,23 @@ export default function PersonalDataForm() {
       }
     })
     //checks errors
-    if (personalData.curpError || personalData.dateOfBirthError){
+    if (personalData.curpError || personalData.dateOfBirthError) {
       SetErrorForm(true)
     }
 
   }, [personalData])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
     switch (name) {
       case 'name':
-        dispatch(setName(value.replace(/[^a-zA-Z\u00C0-\u017F\s]+/g, '')));
+        dispatch(setName(value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑüÜ]+/g, '')));
         break;
       case 'lastName':
-        dispatch(setLastName(value.replace(/[^a-zA-Z\u00C0-\u017F]+/g, '')));
+        dispatch(setLastName(value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑüÜ]+/g, '')));
         break;
       case 'secondLastName':
-        dispatch(setSecondLastName(value.replace(/[^a-zA-Z\u00C0-\u017F]+/g, '')));
+        dispatch(setSecondLastName(value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑüÜ]+/g, '')));
         break;
       case 'phone':
         dispatch(setPhone(value.replace(/\D/g, '')));
@@ -148,8 +147,8 @@ export default function PersonalDataForm() {
         dispatch(setEmail(value));
         break;
       case 'curp':
-        dispatch(setCurp(value.replace(/[^A-Za-z0-9_]+/g,'')));
-        if(value.length == 18){
+        dispatch(setCurp(value.replace(/[^A-Za-z0-9_]+/g, '')));
+        if (value.length == 18) {
           handleCurp(e);
         }
         break;
@@ -175,15 +174,15 @@ export default function PersonalDataForm() {
 
   const handleCurp = (e: { target: { value: any; }; }) => {
     const value = e.target.value;
-    if(value.length < 18 || value.length > 18){
+    if (value.length < 18 || value.length > 18) {
       dispatch(setCurpError('El campo curp debe contener 18 caracteres.'));
-    }else{
+    } else {
       dispatch(setCurpError(''));
     }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, files } = e.target;
+    const {name, files} = e.target;
 
     if (files) {
       const file = files[0];
@@ -191,6 +190,7 @@ export default function PersonalDataForm() {
 
       reader.onload = (e) => {
         const data = e.target?.result;
+
         if (name === 'idFrontPicture') {
           dispatch(setIdFrontPicture(data as string));
         }
@@ -213,7 +213,7 @@ export default function PersonalDataForm() {
   }
 
   const handleNextForm = () => {
-      dispatch(setShowShippingForm(true));
+    dispatch(setShowShippingForm(true));
   }
 
   const showModalWithIdentificationInfo = (e: React.MouseEvent) => {
@@ -223,7 +223,7 @@ export default function PersonalDataForm() {
         <p
           className={`text-center text-3xl lg:text-3xl p-4 md:p-5 text-white ajuste_centro`}
         >
-          <span className="font-medium">Sube una <span className="text-highlight">foto por ambos lados</span> <br />
+          <span className="font-medium">Sube una <span className="text-highlight">foto por ambos lados</span> <br/>
             de tu <span className="text-highlight">identificación oficial (INE o Pasaporte)</span>.
           </span>
         </p>
@@ -253,15 +253,16 @@ export default function PersonalDataForm() {
         <p
           className={`text-center text-3xl lg:text-3xl p-4 md:p-5 text-white ajuste_centro`}
         >
-          <span className="font-medium">Sube una <span className="text-highlight">foto</span> clara o el <span className="text-highlight">PDF</span><br />
-            de tu comprobante de domicilio</span><br />
-          (de la dirección donde quieres recibir<br />
+          <span className="font-medium">Sube una <span className="text-highlight">foto</span> clara o el <span
+            className="text-highlight">PDF</span><br/>
+            de tu comprobante de domicilio</span><br/>
+          (de la dirección donde quieres recibir<br/>
           tu Kit de Bienvenida).
-          <br /><br />
-          Este debe ser menor a 3 meses.<br />
-          Los comprobantes oficiales<br />
-          son los siguientes:<br />
-          gas, luz, teléfono, internet,<br />
+          <br/><br/>
+          Este debe ser menor a 3 meses.<br/>
+          Los comprobantes oficiales<br/>
+          son los siguientes:<br/>
+          gas, luz, teléfono, internet,<br/>
           agua o predial.
         </p>
       </div>,
@@ -275,17 +276,18 @@ export default function PersonalDataForm() {
         <p
           className={`text-center text-3xl lg:text-3xl p-4 md:p-5 text-white ajuste_centro`}
         >
-          <span className="font-medium">Sube una <span className="text-highlight">foto clara</span> o el <span className="text-highlight">PDF</span> de
-            <br />
+          <span className="font-medium">Sube una <span className="text-highlight">foto clara</span> o el <span
+            className="text-highlight">PDF</span> de
+            <br/>
             tu Constancia de Situación
-            <br />
+            <br/>
             Fiscal</span> (CSF) actualizada.
-          <br />
-          <br />
+          <br/>
+          <br/>
           Esta debe ser menor a 3 meses,
-          <br />
+          <br/>
           y puedes descargarla desde el
-          <br />
+          <br/>
           portal del SAT
         </p>
       </div>,
@@ -307,7 +309,8 @@ export default function PersonalDataForm() {
 
       {/* form */}
       <div className={'lg:container mx-auto w-full'}>
-        <div className={'grid grid-cols-12 form-card gap-3 sm:gap-4 md:gap-5 lg:gap-6 text-white w-full mx-auto p-6 md:p-8 lg:p-10 xl:p-12'}>
+        <div
+          className={'grid grid-cols-12 form-card gap-3 sm:gap-4 md:gap-5 lg:gap-6 text-white w-full mx-auto p-6 md:p-8 lg:p-10 xl:p-12'}>
           {/* <div className={'col-span-12'}>
             <input
               type="text"
@@ -326,8 +329,8 @@ export default function PersonalDataForm() {
               </p>
             )}
           </div> */}
-           {/* name */}
-           <div
+          {/* name */}
+          <div
             className={'col-span-12 lg:col-span-4'}
           >
             <input
@@ -400,7 +403,7 @@ export default function PersonalDataForm() {
               name="nationality"
               onChange={handleInputChange}
               ref={el => inputRefs.current.nationality = el}
-              >
+            >
               <option disabled value="" aria-readonly>Nacionalidad*</option>
               <option
                 value={'mexican'}
@@ -637,13 +640,15 @@ export default function PersonalDataForm() {
           <div className="col-span-12 text-black">
             <div className="mb-5 ml-6">
               <label>
-                <input  name="docType" type="radio" className="radio" value={'INE'} onChange={handleInputChange} checked={personalData.docType === "INE"} />
+                <input name="docType" type="radio" className="radio" value={'INE'} onChange={handleInputChange}
+                       checked={personalData.docType === "INE"}/>
                 <span> INE</span>
               </label>
             </div>
             <div className="ml-6">
               <label>
-                <input  name="docType" type="radio" className="radio" value={'Passport'} onChange={handleInputChange} checked={personalData.docType === "Passport"}/>
+                <input name="docType" type="radio" className="radio" value={'Passport'} onChange={handleInputChange}
+                       checked={personalData.docType === "Passport"}/>
                 <span> Pasaporte</span>
               </label>
             </div>
@@ -652,7 +657,8 @@ export default function PersonalDataForm() {
           {/* oficial identification image (front) */}
           {personalData.docType == 'INE' && (
             <div className={'col-span-12 lg:col-span-6'}>
-              <label className={`flex input input-border-black ${personalData.idFrontPictureError ? 'input-error' : ''}`}>
+              <label
+                className={`flex input input-border-black ${personalData.idFrontPictureError ? 'input-error' : ''}`}>
                 <span className={'overflow-hidden truncate'}>Identificación oficial frente*</span>
                 <div className={'ml-auto flex'}>
                   <Image
@@ -661,7 +667,7 @@ export default function PersonalDataForm() {
                     width={20}
                     height={20}
                     className={'inline-block w-5'}
-                    style={{ verticalAlign: 'middle' }}
+                    style={{verticalAlign: 'middle'}}
                   />
                   <Image
                     src={'/img/question-mark-icon.svg'}
@@ -669,7 +675,7 @@ export default function PersonalDataForm() {
                     width={20}
                     height={20}
                     className={'inline-block w-5 ml-2 pointer'}
-                    style={{ verticalAlign: 'middle' }}
+                    style={{verticalAlign: 'middle'}}
                     onClick={showModalWithIdentificationInfo}
                   />
                 </div>
@@ -709,7 +715,8 @@ export default function PersonalDataForm() {
           {/* oficial identification image (back) */}
           {personalData.docType == 'INE' && (
             <div className={'col-span-12 lg:col-span-6'}>
-              <label className={`flex input input-border-black ${personalData.idBackPictureError ? 'input-error' : ''}`}>
+              <label
+                className={`flex input input-border-black ${personalData.idBackPictureError ? 'input-error' : ''}`}>
                 <span className={'overflow-hidden truncate'}>Identificación oficial vuelta*</span>
                 <div className={'ml-auto flex'}>
                   <Image
@@ -718,7 +725,7 @@ export default function PersonalDataForm() {
                     width={20}
                     height={20}
                     className={'inline-block w-5'}
-                    style={{ verticalAlign: 'middle' }}
+                    style={{verticalAlign: 'middle'}}
                   />
                   <Image
                     src={'/img/question-mark-icon.svg'}
@@ -726,7 +733,7 @@ export default function PersonalDataForm() {
                     width={20}
                     height={20}
                     className={'inline-block w-5 ml-2 pointer'}
-                    style={{ verticalAlign: 'middle' }}
+                    style={{verticalAlign: 'middle'}}
                     onClick={showModalWithIdentificationInfo}
                   />
                 </div>
@@ -767,7 +774,8 @@ export default function PersonalDataForm() {
           {personalData.docType == 'Passport' && (
             <>
               <div className={'col-span-6 lg:col-span-6'}>
-                <label className={`flex input input-border-black ${personalData.idBackPictureError ? 'input-error' : ''}`}>
+                <label
+                  className={`flex input input-border-black ${personalData.idBackPictureError ? 'input-error' : ''}`}>
                   <span className={'overflow-hidden truncate'}>Pasaporte*</span>
                   <div className={'ml-auto flex'}>
                     <Image
@@ -776,7 +784,7 @@ export default function PersonalDataForm() {
                       width={20}
                       height={20}
                       className={'inline-block w-5'}
-                      style={{ verticalAlign: 'middle' }}
+                      style={{verticalAlign: 'middle'}}
                     />
                     <Image
                       src={'/img/question-mark-icon.svg'}
@@ -784,7 +792,7 @@ export default function PersonalDataForm() {
                       width={20}
                       height={20}
                       className={'inline-block w-5 ml-2 pointer'}
-                      style={{ verticalAlign: 'middle' }}
+                      style={{verticalAlign: 'middle'}}
                       onClick={showModalWithPassportInfo}
                     />
                   </div>
@@ -826,7 +834,7 @@ export default function PersonalDataForm() {
                   width={20}
                   height={20}
                   className={'inline-block w-5'}
-                  style={{ verticalAlign: 'middle' }}
+                  style={{verticalAlign: 'middle'}}
                 />
                 <Image
                   src={'/img/question-mark-icon.svg'}
@@ -834,45 +842,45 @@ export default function PersonalDataForm() {
                   width={20}
                   height={20}
                   className={'inline-block w-5 ml-2 pointer'}
-                  style={{ verticalAlign: 'middle' }}
+                  style={{verticalAlign: 'middle'}}
                   onClick={showModalWithAddressProof}
                 />
               </div>
               <input
-                  type="file"
-                  accept={'image/*'}
-                  className={'hidden'}
-                  name={'idAddressPicture'}
-                  onChange={handleFileChange}
-                  ref={el => inputRefs.current.idAddressPicture = el}
-                />
+                type="file"
+                accept={'image/*'}
+                className={'hidden'}
+                name={'idAddressPicture'}
+                onChange={handleFileChange}
+                ref={el => inputRefs.current.idAddressPicture = el}
+              />
             </label>
             {/* error */}
             {personalData.idAddressPictureError && (
-                  <p
-                    className={'text-red-500 text-xs mt-1 mx-3'}
-                  >
-                    {personalData.idAddressPictureError}
-                  </p>
-                )}
+              <p
+                className={'text-red-500 text-xs mt-1 mx-3'}
+              >
+                {personalData.idAddressPictureError}
+              </p>
+            )}
             {/* preview */}
             <div
-                className={'flex justify-center mt-2 md:mt-3'}
-              >
-                {personalData.idAddressPicture && (
-                  <img
-                    src={personalData.idAddressPicture}
-                    alt={'Comprobante de domicilio'}
-                    width={200}
-                    height={200}
-                  />
-                )}
-              </div>
+              className={'flex justify-center mt-2 md:mt-3'}
+            >
+              {personalData.idAddressPicture && (
+                <img
+                  src={personalData.idAddressPicture}
+                  alt={'Comprobante de domicilio'}
+                  width={200}
+                  height={200}
+                />
+              )}
+            </div>
           </div>
           {/* proof of tax status */}
           <div className={'col-span-12 md:col-span-6'}>
             <label className={'flex input input-border-black'}>
-              <span className={'overflow-hidden truncate'}>Constancia de situación fiscal*</span>
+              <span className={'overflow-hidden truncate'}>Constancia de situación fiscal</span>
               <div className={'ml-auto flex'}>
                 <Image
                   src={'/img/upload-icon.svg'}
@@ -880,7 +888,7 @@ export default function PersonalDataForm() {
                   width={20}
                   height={20}
                   className={'inline-block w-5'}
-                  style={{ verticalAlign: 'middle' }}
+                  style={{verticalAlign: 'middle'}}
                 />
                 <Image
                   src={'/img/question-mark-icon.svg'}
@@ -888,13 +896,13 @@ export default function PersonalDataForm() {
                   width={20}
                   height={20}
                   className={'inline-block w-5 ml-2 pointer'}
-                  style={{ verticalAlign: 'middle' }}
+                  style={{verticalAlign: 'middle'}}
                   onClick={showModalWithTaxStatusProof}
                 />
               </div>
               <input
                 type="file"
-                accept={'image/*'}
+                accept={'.pdf'}
                 className={'hidden'}
                 name={'idTaxPicture'}
                 onChange={handleFileChange}
@@ -903,25 +911,25 @@ export default function PersonalDataForm() {
             </label>
             {/* error */}
             {personalData.idTaxPictureError && (
-                  <p
-                    className={'text-red-500 text-xs mt-1 mx-3'}
-                  >
-                    {personalData.idTaxPictureError}
-                  </p>
-                )}
+              <p
+                className={'text-red-500 text-xs mt-1 mx-3'}
+              >
+                {personalData.idTaxPictureError}
+              </p>
+            )}
             {/* preview */}
             <div
-                className={'flex justify-center mt-2 md:mt-3'}
-              >
-                {personalData.idTaxPicture && (
-                  <img
-                    src={personalData.idTaxPicture}
-                    alt={'Constancia de situación fiscal'}
-                    width={200}
-                    height={200}
-                  />
-                )}
-              </div>
+              className={'flex justify-center mt-2 md:mt-3'}
+            >
+              {personalData.idTaxPicture && (
+                <embed
+                  src={personalData.idTaxPicture}
+                  type="application/pdf"
+                  width="200"
+                  height="200"
+                />
+              )}
+            </div>
           </div>
 
           <div className={'col-span-12'}>
@@ -937,7 +945,7 @@ export default function PersonalDataForm() {
                 <div className="button-container ">
                   <button
                     className="btn-xl multi-border bg-black font-medium text-white disabled:opacity-50"
-                    onClick={()=>handleNextForm()}
+                    onClick={() => handleNextForm()}
                     disabled={errorForm}
                   >
                     SIGUIENTE

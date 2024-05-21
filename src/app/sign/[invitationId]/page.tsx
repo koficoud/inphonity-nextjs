@@ -261,6 +261,8 @@ export default function Sign({ params }: { params: { invitationId: string } }) {
                     placeholder="Correo electrónico"
                     name={'email'}
                     autoComplete="off"
+                    value={invitationData?.pre_registration?.email || ''}
+                    disabled={true}
                   />
                 </div>
                 <div className="flex items-center text-black mb-6 md:mb-8 lg:mb-10">
