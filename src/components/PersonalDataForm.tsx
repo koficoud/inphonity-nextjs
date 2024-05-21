@@ -126,13 +126,13 @@ export default function PersonalDataForm() {
     const {name, value} = e.target;
     switch (name) {
       case 'name':
-        dispatch(setName(value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑüÜ]+/gu, '')));
+        dispatch(setName(value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑüÜ´]+/g, '')));
         break;
       case 'lastName':
-        dispatch(setLastName(value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑüÜ]+/gu, '')));
+        dispatch(setLastName(value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑüÜ´]+/g, '')));
         break;
       case 'secondLastName':
-        dispatch(setSecondLastName(value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑüÜ]+/gu, '')));
+        dispatch(setSecondLastName(value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑüÜ´]+/g, '')));
         break;
       case 'phone':
         dispatch(setPhone(value.replace(/\D/g, '')));

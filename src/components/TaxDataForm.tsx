@@ -111,7 +111,7 @@ export default function TaxDataForm() {
         dispatch(setFiscalRegime(value));
         break;
       case "name":
-        dispatch(setName(value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑüÜ]+/gu, '')));
+        dispatch(setName(value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑüÜ´]+/g, '')));
         break;
       case "street":
         dispatch(setStreet(value));
