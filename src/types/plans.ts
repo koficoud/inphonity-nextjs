@@ -2,7 +2,7 @@ export interface Commission {
     id:                          number;
     product_id:                  number;
     target_id:                   number;
-    year_1_residual:             string;
+    year_1_residual:             number;
     year_1_residual_sales_force: string;
     year_2_residual:             string;
     year_2_residual_sales_force: string;

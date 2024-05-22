@@ -39,6 +39,7 @@ const PlanCard: React.FC<Plan> = (planData) => {
     dispatch(setName(planData.name));
   };
 
+  // @ts-ignore
   return (
     <div className="click-listen">
       <div className="bg-white rounded-[1.25rem] border-2 border-white shadow-2xl overflow-hidden m-2">
@@ -204,13 +205,13 @@ const PlanCard: React.FC<Plan> = (planData) => {
                   </p>
 
                   <p className="text-xs mx-auto mb-2.5 text-black font-medium">
-                    Antes <span className="line-through">1%</span>, ahora:
+                    Antes <span className="line-through">{planData.commissions![0].year_1_residual}%</span>, ahora:
                   </p>
                 </div>
 
                 <div className="">
                   <p className="font-medium text-xl md:text-4xl text-black">
-                    {formatNumber(cashback)}%
+                    {planData.commissions![0].year_1_residual * 2}%
                   </p>
 
                   <p className="text-10px mx-auto mb-2.5 text-black font-medium">
