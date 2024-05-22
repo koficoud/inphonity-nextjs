@@ -906,7 +906,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
                 </p>
 
                 {mitIframe && (
-                  <iframe src={mitIframe} className="col-span-12 h-[500px] border-0 w-full" />
+                  <iframe src={mitIframe} className="col-span-12 h-[800px] border-0 w-full" />
                 )}
 
                 <div className="col-span-12 text-3xl flex flex-col mt-10 mx-auto justify-between px-5 w-auto sm:w-[23.125rem] py-[3rem] h-[21.25rem] rounded-2xl border-2 border-black">
