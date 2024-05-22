@@ -277,6 +277,10 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
       registerCashSpeiPay(method)
     }
 
+    setForm({
+      ...form,
+      isSubmitting: false
+    });
   }
 
   const registerCashSpeiPay = (method: PaymentMethod)=>{
