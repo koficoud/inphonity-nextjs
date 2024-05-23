@@ -11,6 +11,71 @@ import {
 } from "@/lib/features/account-data/accountDataSlice";
 import { ModalContext } from "@/contexts/ModalContext";
 
+const firstGroup = [
+  'BBVA',
+  'Citibanamex',
+  'Santander',
+  'HSBC',
+  'Inbursa',
+  'Bajio',
+  'Scotiabank',
+  'Banregio',
+  'Afirme',
+  'Banorte',
+  'Banco Azteca',
+  'Bancopel',
+  'Spin',
+  'Nu'
+];
+
+const secondGroup = [
+  'ABC Capital',
+  'Afirme',
+  'Mifel',
+  'Actinver',
+  'Autofin México',
+  'Bancrea',
+  'Bineo',
+  'Covalto',
+  'Compartamos',
+  'Credit Suisse (México)',
+  'Banco de Inversión Afirme',
+  'Forjadores',
+  'Inmobiliario Mexicano',
+  'Invex',
+  'JP Morgan',
+  'KEB Hana México',
+  'Monex',
+  'Multiva',
+  'PagaTodo',
+  'Regional de Monterrey',
+  'S3 Caceis México',
+  'Sabadell',
+  'Shinhan de México',
+  'Ve por Más',
+  'Bank of America Mexico',
+  'Bank of China Mexico',
+  'Bankaool',
+  'Bansí',
+  'Barclays Bank México',
+  'BNP Paribas',
+  'CIBanco',
+  'Consubanco',
+  'Fundación Dondé Banco',
+  'Industrial and Commercial Bank of China',
+  'Intercam Banco',
+  'Mizuho Bank',
+  'MUFG Bank Mexico'
+];
+
+firstGroup.sort();
+secondGroup.sort();
+
+const bankNames = [
+  ...firstGroup,
+  ...secondGroup,
+];
+
 export default function AccountDataForm() {
   const dispatch = useAppDispatch();
   const accountData = useAppSelector((state) => state.accountData);
@@ -142,7 +207,7 @@ export default function AccountDataForm() {
           ¿Dónde quieres recibir tu cashback?
         </h3>
         <p className={'text-base text-black text-center px-16'}>
-          <span className={'font-medium text-highlight-red'}>Importante: </span> 
+          <span className={'font-medium text-highlight-red'}>Importante: </span>
           Asegúrate de ser el titular de la cuenta, ingresar los datos correctos y verificar que no haya límite de depósitos mensuales para recibir tu cashback correctamente.
         </p>
       </header>
@@ -152,15 +217,17 @@ export default function AccountDataForm() {
         <div className={'grid grid-cols-12 form-card gap-3 sm:gap-4 md:gap-5 lg:gap-6 w-full mx-auto p-6 md:p-8 lg:p-10 xl:p-12'}>
           {/* bank name */}
           <div className={'col-span-12'}>
-            <input 
-              type="text"
+            <select
               className={`input input-border-black ${accountData.bankNameError ? 'input-error' : ''}`}
-              placeholder={`Banco*`}
               value={accountData.bankName}
-              name={'bankName'}
+              name={`bankName`}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.bankName = el}
-            />
+            >
+              <option value={''}>Selecciona tu banco*</option>
+              {bankNames.map((bankName, index) => (
+                <option key={index} value={bankName}>{bankName}</option>
+              ))}
+            </select>
             {/* error */}
             {accountData.bankNameError && (
               <p className={'text-red-500 text-xs mt-1 mx-3'}>
@@ -171,7 +238,7 @@ export default function AccountDataForm() {
 
           {/* bank account number */}
           <div className={'col-span-12'}>
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${accountData.bankAccountNumberError ? 'input-error' : ''}`}
               placeholder={`Número de cuenta*`}
@@ -191,7 +258,7 @@ export default function AccountDataForm() {
 
           {/* confirmation */}
           <div className={'col-span-12'}>
-            <input 
+            <input
               type="text"
               className={`input input-border-black`}
               placeholder={`Confirma tu número de cuenta*`}
@@ -205,7 +272,7 @@ export default function AccountDataForm() {
 
           {/* interbank clabe */}
           <div className={'col-span-12'}>
-            <input 
+            <input
               type="text"
               className={`input input-border-black ${accountData.interbankClabeError ? 'input-error' : ''}`}
               placeholder={`CLABE interbancaria*`}
@@ -227,7 +294,7 @@ export default function AccountDataForm() {
 
           {/* confirmation */}
           <div className={'col-span-12'}>
-            <input 
+            <input
               type="text"
               className={`input input-border-black`}
               placeholder={`Confirma tu CLABE interbancaria*`}
