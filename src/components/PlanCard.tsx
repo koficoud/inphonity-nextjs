@@ -19,8 +19,8 @@ const PlanCard: React.FC<Plan> = (planData) => {
   const plan = useAppSelector((state) => state.plan);
 
   const cashback = 0;//TODO
-  const commision = planData.commissions?.find(com => com.target_id == plan.id)
-  const referralIncome = commision?.referral ?? 0;
+  const commission = planData.commissions?.find(com => com.target_id == plan.id)
+  const referralIncome = commission?.referral ?? 0;
 
   const handleButtonClick = () => {
     let scrollSection = 0;
@@ -205,13 +205,13 @@ const PlanCard: React.FC<Plan> = (planData) => {
                   </p>
 
                   <p className="text-xs mx-auto mb-2.5 text-black font-medium">
-                    Antes <span className="line-through">{planData.commissions![0].year_1_residual}%</span>, ahora:
+                    Antes <span className="line-through">{commission!.year_1_residual}%</span>, ahora:
                   </p>
                 </div>
 
                 <div className="">
                   <p className="font-medium text-xl md:text-4xl text-black">
-                    {planData.commissions![0].year_1_residual * 2}%
+                    {commission!.year_1_residual * 2}%
                   </p>
 
                   <p className="text-10px mx-auto mb-2.5 text-black font-medium">

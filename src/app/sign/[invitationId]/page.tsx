@@ -220,7 +220,13 @@ export default function Sign({ params }: { params: { invitationId: string } }) {
                   />
                   <label htmlFor="terms">
                     <span className={`ml-2 inline-block font-medium text-white`}>
-                      Acepto los Términos y Condiciones
+                      <a
+                        href={'https://drive.google.com/file/d/12omj25jSFrsjbn6hMiPUdXzGFLCOYJ_L/view'}
+                        target={'_blank'}
+                        className={'underline'}
+                      >
+                        Acepto los Términos y Condiciones
+                      </a>
                     </span>
                   </label>
                 </div>
