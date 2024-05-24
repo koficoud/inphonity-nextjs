@@ -19,7 +19,7 @@ const PlanCard: React.FC<Plan> = (planData) => {
   const plan = useAppSelector((state) => state.plan);
 
   const cashback = 0;//TODO
-  const commission = planData.commissions?.find(com => com.target_id == plan.id)
+  const commission = planData.commissions?.find(com => com.target_id == planData.id)
   const referralIncome = commission?.referral ?? 0;
 
   const handleButtonClick = () => {
