@@ -818,7 +818,7 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
   }, [activeTab]);
 
   useEffect(() => {
-    if (invitationData !== undefined && echoInstance === null) {
+    if (invitationData && invitationData.pre_registration && !echoInstance) {
       const { id } = invitationData!.pre_registration!;
       const echo = initializeEcho(id);
 
