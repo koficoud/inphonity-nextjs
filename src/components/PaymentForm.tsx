@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, {memo, useEffect, useState} from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -36,6 +36,7 @@ import { resetErrors as taxDateResetErrors } from "@/lib/features/tax-data/taxDa
 import { PreRegistration, useGetInvitationByIdQuery } from "@/lib/services/invitationsApi";
 import { setIsPaid } from "@/lib/features/plan/planSlice";
 import PlusDecoration from "@/components/PlusDecoration";
+import initializeEcho from '@/initializeEcho.js';
 
 type PaymentFormProps = {
   invitationId: string;
@@ -50,7 +51,6 @@ const formatNumberToMoney = (number: number) => {
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { ContenTiendasAfiliadas, HeaderTiendasAfiliadas } from "./ModalPayments";
-import { request } from "@/mocks/request-data";
 
 async function printDiv(divId: string) {
   const input = document.getElementById(divId);
@@ -99,7 +99,8 @@ const formatNumber = (number: number, decimals = 0) => {
 
   return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
-const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
+
+const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) => {
   const { openModal, closeModal } = React.useContext(ModalContext);
   const dispatch = useAppDispatch();
   const accountData = useAppSelector((state) => state.accountData);
@@ -109,7 +110,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
   const plan = useAppSelector((state) => state.plan);
   const shippingData = useAppSelector((state) => state.shipping);
   const [shippingCost, setShippingCost] = useState(0);
-
   const {
     isLoading: invitationIsLoading,
     isFetching: invitationIsFetching,
@@ -117,13 +117,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
     error: invitationError,
     refetch: invitationRefetch
   } = useGetInvitationByIdQuery(invitationId);
-  // const {
-  //   isLoading: invitationIsLoading,
-  //   isFetching: invitationIsFetching,
-  //   data: invitationData,
-  //   error: invitationError,
-  //   refetch: invitationRefetch
-  // } = request;
   const [register, { isLoading: registerIsLoading, error: registerError, isSuccess }] = useRegisterMutation();
   const [initialPayment, {
     isLoading: initialPaymentIsLoading,
@@ -144,6 +137,9 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
     isSubmitting: false,
   });
   const [mitIframe, setMitIframe] = useState('');
+  const [tokuIframe, setTokuIframe] = useState('');
+  const [echoInstance, setEchoInstance] = useState<any>(null);
+  const [mitAttempts, setMitAttempts] = useState(0);
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
@@ -711,6 +707,21 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
     }
   }
 
+  /**
+   * Fetches the iframe to pay with Toku.
+   */
+  const fetchTokuIframe = async () => {
+    try {
+      const api = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+      const response = await fetch(`${api}/api/pre-register/${invitationId}/pay-with-toku`);
+      const data = await response.json();
+
+      setTokuIframe(data.url);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   useEffect(() => {
     if (registerError && 'data' in registerError) {
       const { data } = registerError as ApiValidationError;
@@ -800,6 +811,45 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
     }
   }, [plan]);
 
+  useEffect(() => {
+    if (activeTab === "toku") {
+      fetchTokuIframe();
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (invitationData !== undefined && echoInstance === null) {
+      const { id } = invitationData!.pre_registration!;
+      const echo = initializeEcho(id);
+
+      setEchoInstance(echo);
+    }
+  }, [invitationData]);
+
+  useEffect(() => {
+    console.log(invitationId);
+  }, []);
+
+  useEffect(() => {
+    if (echoInstance !== null) {
+      const { id } = invitationData!.pre_registration!;
+      const channelName = `pre-registration.${id}`;
+      const channel = echoInstance.channel(channelName);
+
+      channel.listen('PreRegistrationPaymentError', (event: any) => {
+        if (event.paymentMethod === 'MIT_SANTANDER') {
+          setMitAttempts(prev => prev + 1);
+          fetchMitIframe();
+        }
+      });
+
+      return () => {
+        channel.stopListening('PreRegistrationPaymentError');
+        echoInstance.leave(`pre-registration.${id}`);
+      };
+    }
+  }, [echoInstance]);
+
   const validTdc = (e:any) => {
     let card = e.target.value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1-');
     setForm({ ...form, cardNumber:  card})
@@ -813,6 +863,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
     }
   }, [shipping.isEsim]);
 
+  useEffect(() => {
+    if (mitAttempts === 2) {
+      setActiveTab('toku');
+    }
+  }, [mitAttempts]);
+
   return (
     <div className="p-3 md:p-6 lg:p-9 xl:p-12 bg-white" id="PaymentFormSection">
       {/* header */}
@@ -825,18 +881,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
         </p>
       </header>
 
-      {/* <div className={'col-span-12 my-10'}>
-        <div className="button-container flex justify-center">
-          <button
-            className="btn-md multi-border font-medium text-white disabled:opacity-50"
-            onClick={() => handleTestModal('card')}
-            disabled={initialPaymentIsLoading || form.isSubmitting}
-          >
-            Probar
-          </button>
-        </div>
-      </div> */}
-
       {invitationData && invitationData.pre_registration?.payment_status === 'paid' ? (
         <div className="bg-black text-white rounded-3xl p-5 m-3 text-center mb-10 font-medium">
           <h3 className={`text-highlight text-3xl md:text-6xl mb-6`}>
@@ -848,170 +892,78 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ invitationId }) => {
         </div>
       ) : (
         <>
-          <div className="lg:container text-black text-base px-6 md:px-8 lg:px-10 xl:px-12">
-            <div className="mb-5">
-              <span className="mr-10">
-                <Image
-                  src={'/img/pago-card.svg'}
-                  alt={'Pago con tarjeta'}
-                  width={39.33}
-                  height={27.42}
-                  className={'inline-block w-5 font-medium'}
-                />
-              </span>
-              <span className="mr-10 inline-block align-sub">
-                <input name="activeTab" type="radio" className="radio" checked={activeTab == "Pago con tarjeta"} onChange={() => handleTabClick("Pago con tarjeta")} />
-              </span>
-              <label>
-                <span> Pago con tarjeta</span>
-              </label>
-            </div>
-            <div className="mb-5">
-              <span className="mr-10">
-                <Image
-                  src={'/img/pago-cash.svg'}
-                  alt={'Pago con efectivo'}
-                  width={39.33}
-                  height={27.42}
-                  className={'inline-block w-5 font-medium'}
-                />
-              </span>
-              <span className="mr-10 inline-block align-sub">
-                <input name="activeTab" type="radio" className="radio" checked={activeTab == "Pago en efectivo"} onChange={() => handleTabClick("Pago en efectivo")} />
-              </span>
-              <label>
-                <span> Pago en efectivo</span>
-              </label>
-            </div>
-            <div className="mb-5">
-              <span className="mr-10">
-                <Image
-                  src={'/img/pago-transfer.svg'}
-                  alt={'Pago con transferencia'}
-                  width={39.33}
-                  height={27.42}
-                  className={'inline-block w-5 font-medium'}
-                />
-              </span>
-              <span className="mr-10 inline-block align-sub">
-                <input name="activeTab" type="radio" className="radio" checked={activeTab == "Pago con transferencia interbancaria (SPEI)"} onChange={() => handleTabClick("Pago con transferencia interbancaria (SPEI)")} />
-              </span>
-              <label>
-                <span> Pago con transferencia interbancaria SPEI</span>
-              </label>
-            </div>
-          </div>
-
           <div className="lg:container text-black font-medium px-6 md:px-8 lg:px-10 xl:px-12">
             {activeTab === "Pago con tarjeta" && (
-              <div className={'grid grid-cols-12'} id={'payment-card'}>
+              <div
+                className={'grid grid-cols-12'}
+                id={'payment-card'}
+              >
                 <p className={`col-span-12 text-2xl mb-5`}>
                   Pago con Tarjeta de crédito y débito
                 </p>
 
                 {mitIframe && (
-                  <iframe src={mitIframe} className="col-span-12 h-[800px] border-0 w-full" />
+                  <iframe src={mitIframe} className="col-span-12 h-[800px] border-0 w-full"/>
                 )}
-
-                <div className="col-span-12 text-3xl flex flex-col mt-10 mx-auto justify-between px-5 w-auto sm:w-[23.125rem] py-[3rem] h-[21.25rem] rounded-2xl border-2 border-black">
-                  <div className="flex justify-between mx-auto gap-x-8">
-                    <div className="flex flex-col justify-start font-light">
-                      <span className="font-medium">Plan:</span>
-                      <span className="font-medium">Costo de SIM:</span>
-                      <span className="font-medium">Envío:</span>
-                    </div>
-                    <div className="flex flex-col justify-start font-light">
-                      <span>${formatNumber(plan.price)}</span>
-                      <span>${formatNumber(0)}</span>
-                      <span>${shippingCost}</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-center">
-                    <span className="font-medium text-4xl md:text-[3.125rem] my-[1.75rem] text-custom-blue">Total a Pagar</span>
-                  </div>
-                  <div className="flex justify-center pt-0 md:pt-4">
-                    <span className="text-4xl md:text-[3.125rem]">${formatNumber(Number(plan.price) + shippingCost)}</span>
-                  </div>
-                </div>
-
-                <div className={'col-span-12 my-10'}>
-                  <div className="flex justify-center">
-                    <div className="button-container">
-                      <button
-                        className="btn-md multi-border bg-black font-medium text-white disabled:opacity-50"
-                        onClick={() => handlePayment('card', false)}
-                        disabled={initialPaymentIsLoading || form.isSubmitting}
-                      >
-                        SIGUIENTE
-                      </button>
-                    </div>
-                  </div>
-                </div>
               </div>
             )}
 
+            {activeTab === 'toku' && (
+              <div
+                className={'grid grid-cols-12'}
+                id={'payment-toku'}
+              >
+                <p className={`col-span-12 text-2xl mb-5`}>Pago con Toku</p>
 
-            {activeTab === "Pago en efectivo" && (
-              <div>
-                <p>Pago con efectivo</p>
-                <div className="flex flex-col">
-                  <div className="flex justify-center my-5">
-                    <div className="button-container ">
-                      <button
-                        className="btn-xl multi-border bg-black font-medium text-white disabled:opacity-50"
-                        onClick={() => handlePayment('cash', true)}
-                      >
-                        GUARDAR SOLICITUD
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex justify-center">
-                    <div className="button-container ">
-                      <button
-                        className="btn-xl multi-border bg-black font-medium text-white disabled:opacity-50"
-                        onClick={() => handlePayment('cash', false)}
-                      >
-                        GENERAR REFERENCIA
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                {tokuIframe && (
+                  <iframe src={tokuIframe} className="col-span-12 h-[800px] border-0 w-full"/>
+                )}
               </div>
             )}
 
-
-            {activeTab === "Pago con transferencia interbancaria (SPEI)" && (
-              <div>
-                <p>Pago con transferencia bancaria SPEI</p>
-                <div className="flex flex-col">
-                  <div className="flex justify-center my-5">
-                    <div className="button-container ">
-                      <button
-                        className="btn-xl multi-border bg-black font-medium text-white disabled:opacity-50"
-                        onClick={() => handlePayment('spei', true)}
-                      >
-                        GUARDAR SOLICITUD
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex justify-center">
-                    <div className="button-container ">
-                      <button
-                        className="btn-xl multi-border bg-black font-medium text-white disabled:opacity-50"
-                        onClick={() => handlePayment('spei', false)}
-                      >
-                        GENERAR REFERENCIA
-                      </button>
-                    </div>
-                  </div>
+            <div
+              className="col-span-12 text-3xl flex flex-col mt-10 mx-auto justify-between px-5 w-auto sm:w-[23.125rem] py-[3rem] h-[21.25rem] rounded-2xl border-2 border-black">
+              <div className="flex justify-between mx-auto gap-x-8">
+                <div className="flex flex-col justify-start font-light">
+                  <span className="font-medium">Plan:</span>
+                  <span className="font-medium">Costo de SIM:</span>
+                  <span className="font-medium">Envío:</span>
+                </div>
+                <div className="flex flex-col justify-start font-light">
+                  <span>${formatNumber(plan.price)}</span>
+                  <span>${formatNumber(0)}</span>
+                  <span>${shippingCost}</span>
                 </div>
               </div>
-            )}
+              <div className="flex justify-center">
+                <span
+                  className="font-medium text-4xl md:text-[3.125rem] my-[1.75rem] text-custom-blue">Total a Pagar</span>
+              </div>
+              <div className="flex justify-center pt-0 md:pt-4">
+                <span className="text-4xl md:text-[3.125rem]">${formatNumber(Number(plan.price) + shippingCost)}</span>
+              </div>
+            </div>
+
+            <div className={'col-span-12 my-10'}>
+              <div className="flex justify-center">
+                <div className="button-container">
+                  <button
+                    className="btn-md multi-border bg-black font-medium text-white disabled:opacity-50"
+                    onClick={() => handlePayment('card', false)}
+                    disabled={initialPaymentIsLoading || form.isSubmitting}
+                  >
+                    SIGUIENTE
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </>
       )}
     </div>
   );
-};
+});
+
+PaymentForm.displayName = 'PaymentForm';
 
 export default PaymentForm;
