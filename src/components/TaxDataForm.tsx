@@ -27,7 +27,6 @@ export default function TaxDataForm() {
   const fieldsOrder: (keyof typeof taxData)[] = useMemo(() => [
     "rfc",
     'fiscalRegime',
-    "name",
     "street",
     "exteriorNumber",
     "neighborhood",
@@ -83,7 +82,6 @@ export default function TaxDataForm() {
   }, [
     taxData.rfcError,
     taxData.fiscalRegime,
-    taxData.nameError,
     taxData.streetError,
     taxData.exteriorNumberError,
     taxData.interiorNumberError,
@@ -109,9 +107,6 @@ export default function TaxDataForm() {
         break;
       case 'fiscalRegime':
         dispatch(setFiscalRegime(value));
-        break;
-      case "name":
-        dispatch(setName(value.replace(/[^a-zA-Z\sáéíóúÁÉÍÓÚñÑüÜ´]+/g, '')));
         break;
       case "street":
         dispatch(setStreet(value));
@@ -167,7 +162,6 @@ export default function TaxDataForm() {
     dispatch(setZipCode(shipping.zipCode));
     dispatch(setState(shipping.state));
     dispatch(setMunicipality(shipping.city));
-    dispatch(setName(`${personalData.name}`));
   }
 
   const emptyTaxAddressData = () => {
@@ -178,7 +172,6 @@ export default function TaxDataForm() {
     dispatch(setZipCode(''));
     dispatch(setZipCode(''));
     dispatch(setMunicipality(''));
-    dispatch(setName(''));
   }
 
   const handleNextForm = () => {
@@ -228,29 +221,6 @@ export default function TaxDataForm() {
             <label htmlFor={`dontHaveTaxData`}>
               <span className={`ml-2 inline-block text-black`}>No tengo mi información fiscal a la mano o actualizada</span>
             </label>
-          </div>
-
-          {/* name */}
-          <div
-            className={'col-span-12'}
-          >
-            <input
-              type="text"
-              className={`input input-border-black ${taxData.nameError ? 'input-error' : ''}`}
-              placeholder={`Nombre completo*`}
-              value={taxData.name}
-              name={`name`}
-              onChange={handleInputChange}
-              ref={el => inputRefs.current.name = el}
-            />
-            {/* error */}
-            {taxData.nameError && (
-              <p
-                className={'text-red-500 text-xs mt-1 mx-3'}
-              >
-                {taxData.nameError}
-              </p>
-            )}
           </div>
 
            {/* rfc */}
@@ -456,18 +426,6 @@ export default function TaxDataForm() {
           </div>
 
           <div className={'col-span-12 flex justify-between'}>
-              {/* <div className="flex items-center text-white mb-2 ml-2">
-                <input
-                  type="checkbox"
-                  id={'myAddressAreEqual'}
-                  className="form-checkbox green-check h-5 w-5 text-green-500"
-                  name={'myAddressAreEqual'}
-                  onChange={handleMyAddressAreEqualChange}
-                />
-                <label htmlFor={'myAddressAreEqual'}>
-                  <span className={`ml-2 inline-block text-white`}>Mi dirección de envío y facturación son iguales</span>
-                </label>
-              </div> */}
               <div>
                 <span className={`text-base text-black font-medium`}>
                   Campos Obligatorios*

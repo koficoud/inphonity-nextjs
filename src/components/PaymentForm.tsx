@@ -206,7 +206,6 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
         address: shippingData.street,
         rfc: taxData.rfc,
         fiscal_regime: taxData.fiscalRegime,
-        name: taxData.name,
         tax_zip_code: taxData.zipCode,
         street: taxData.street,
         exterior_number: taxData.exteriorNumber,
@@ -871,16 +870,6 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
 
   return (
     <div className="p-3 md:p-6 lg:p-9 xl:p-12 bg-white" id="PaymentFormSection">
-      {/* header */}
-      <header className="mb-10">
-        <h3 className={'font-medium text-black text-center text-3xl sm:text-5xl mb-3'}>
-          Realizar <span className="text-custom-blue">pago</span>
-        </h3>
-        <p className={'text-xl text-black text-center px-16'}>
-          ¿Cómo quieres realizar tu pago?
-        </p>
-      </header>
-
       {invitationData && invitationData.pre_registration?.payment_status === 'paid' ? (
         <div className="bg-black text-white rounded-3xl p-5 m-3 text-center mb-10 font-medium">
           <h3 className={`text-highlight text-3xl md:text-6xl mb-6`}>
@@ -892,6 +881,15 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
         </div>
       ) : (
         <>
+          {/* header */}
+          <header className="mb-10">
+            <h3 className={'font-medium text-black text-center text-3xl sm:text-5xl mb-3'}>
+              Realizar <span className="text-custom-blue">pago</span>
+            </h3>
+            <p className={'text-xl text-black text-center px-16'}>
+              ¿Cómo quieres realizar tu pago?
+            </p>
+          </header>
           <div className="lg:container text-black font-medium px-6 md:px-8 lg:px-10 xl:px-12">
             {activeTab === "Pago con tarjeta" && (
               <div

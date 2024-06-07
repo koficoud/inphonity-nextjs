@@ -23,7 +23,6 @@ import {
   setState as setTaxState,
   setMunicipality as setTaxMunicipality,
   setEmail as setTaxEmail,
-  setName as setTaxName,
 } from "@/lib/features/tax-data/taxDataSlice";
 import Image from "next/image";
 
@@ -142,7 +141,6 @@ export default function ShippingForm() {
     dispatch(setTaxState(shipping.state));
     dispatch(setTaxMunicipality(shipping.city));
     dispatch(setTaxEmail(personalData.email));
-    dispatch(setTaxName(`${personalData.name} ${personalData.lastName} ${personalData.secondLastName}`));
   }
 
   const emptyTaxAddressData = () => {
@@ -155,7 +153,6 @@ export default function ShippingForm() {
     dispatch(setTaxState(''));
     dispatch(setTaxMunicipality(''));
     dispatch(setTaxEmail(''));
-    dispatch(setTaxName(''));
   }
 
   return (

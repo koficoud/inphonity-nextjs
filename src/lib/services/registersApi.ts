@@ -29,7 +29,6 @@ type RegisterRequest = {
   address: string;
   rfc?: string;
   fiscal_regime?: string;
-  name?: string;
   tax_zip_code?: string;
   street?: string;
   exterior_number?: string;
@@ -84,7 +83,6 @@ type InitialPaymentResponse = {
   address: string;
   rfc?: string;
   cfdi_use?: string;
-  name?: string;
   fiscal_regime?: string;
   tax_zip_code?: string;
   street?: string;

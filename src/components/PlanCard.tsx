@@ -17,7 +17,6 @@ const formatNumber = (number: number, decimals=0) => {
 const PlanCard: React.FC<Plan> = (planData) => {
   const dispatch = useAppDispatch();
   const plan = useAppSelector((state) => state.plan);
-
   const cashback = 0;//TODO
   const commission = planData.commissions?.find(com => com.target_id == planData.id)
   const referralIncome = commission?.referral ?? 0;

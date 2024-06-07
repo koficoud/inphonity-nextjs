@@ -5,8 +5,6 @@ export interface TaxData {
   rfc: string;
   fiscalRegime: string;
   rfcError: string;
-  name: string;
-  nameError: string;
   street: string;
   streetError: string;
   exteriorNumber: string;
@@ -32,8 +30,6 @@ const initialState: TaxData = {
   rfc: "",
   fiscalRegime: '',
   rfcError: "",
-  name: "",
-  nameError: "",
   street: "",
   streetError: "",
   exteriorNumber: "",
@@ -63,8 +59,6 @@ name: "taxData",
       state.rfc = "";
       state.fiscalRegime = '';
       state.rfcError = "";
-      state.name = "";
-      state.nameError = "";
       state.street = "";
       state.streetError = "";
       state.exteriorNumber = "";
@@ -88,7 +82,6 @@ name: "taxData",
     resetErrors: (state) => {
       state.rfcError = "";
       state.fiscalRegime = '';
-      state.nameError = "";
       state.streetError = "";
       state.exteriorNumberError = "";
       state.interiorNumberError = "";
@@ -110,12 +103,6 @@ name: "taxData",
     },
     setFiscalRegimeError: (state, action: PayloadAction<string>) => {
       state.fiscalRegime = action.payload;
-    },
-    setName: (state, action: PayloadAction<string>) => {
-      state.name = action.payload;
-    },
-    setNameError: (state, action: PayloadAction<string>) => {
-      state.nameError = action.payload;
     },
     setStreet: (state, action: PayloadAction<string>) => {
       state.street = action.payload;
@@ -181,7 +168,6 @@ name: "taxData",
 
       state.rfc = invitation.pre_registration?.rfc || "";
       state.fiscalRegime = invitation.pre_registration?.fiscal_regime || '';
-      state.name = invitation.pre_registration?.name || "";
       state.street = invitation.pre_registration?.street || "";
       state.exteriorNumber = invitation.pre_registration?.exterior_number || "";
       state.interiorNumber = invitation.pre_registration?.interior_number || "";
@@ -206,8 +192,6 @@ export const {
   setRfcError,
   setFiscalRegime,
   setFiscalRegimeError,
-  setName,
-  setNameError,
   setStreet,
   setStreetError,
   setExteriorNumber,

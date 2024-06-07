@@ -123,7 +123,6 @@ export type PreRegistration = {
   last_name: string;
   mother_last_name: string;
   municipality: string | null;
-  name: string | null;
   neighborhood: string | null;
   payment_method: string | null;
   payment_reference: string | null;
