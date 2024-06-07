@@ -4,7 +4,6 @@ import {useAppDispatch, useAppSelector} from "@/lib/hooks";
 import {
   setRfc,
   setFiscalRegime,
-  setName,
   setStreet,
   setExteriorNumber,
   setInteriorNumber,
