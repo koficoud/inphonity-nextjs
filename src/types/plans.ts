@@ -45,8 +45,8 @@ export interface Plan {
     has_fm:            number;
     has_tt:            number;
     has_x:             number;
-    has_tl:             number;
-    has_sc:             number;
+    has_telegram:      number;
+    has_snapchat:      number;
     portability_promo: TrustedHTML | string | HTMLSpanElement;
     price:             number;
     code:              string;

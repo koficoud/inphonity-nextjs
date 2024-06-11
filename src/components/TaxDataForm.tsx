@@ -195,9 +195,8 @@ export default function TaxDataForm() {
         </div>
         <div className="lg:container bg-white p-8 text-black rounded-md mx-auto w-[90%] lg:w-[80%] border-2 border-[#EB522D]">
           <p className={`text-base leading-none`}>
-            <span className="font-medium">Importante: </span>
-            Es necesario que tengas RFC con homoclave para que podamos realizar los pagos de tu cashback. Si aún
-            no lo tienes, cuentas con 90 días naturales para tramitarlo, de lo contrario no podrás recibir el beneficio del cashback.
+            <span className="font-medium">AVISO IMPORTANTE FACTURACIÓN: </span>
+            Es importante tener RFC con homoclave para recibir los pagos de tu cashback.Tienes 90 días para tramitarlo y no perder este beneficio. También necesitarás tu Constancia de Situación Fiscal actualizada y estar en el régimen de Asimilados al Salario. El Régimen Fiscal se otorga según la actividad económica; una persona puede tener más de uno asignado.
           </p>
           <p className={`text-base leading-none`}>
             También es necesario que cuentes con tu Constancia de Situación Fiscal actualizada y que se encuentre

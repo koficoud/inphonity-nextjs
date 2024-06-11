@@ -149,7 +149,7 @@ const PlanCard: React.FC<Plan> = (planData) => {
                     className="inline-block w-5"
                   />
                 )}
-              {Boolean(planData.has_sc) && (
+              {Boolean(planData.has_snapchat) && (
                   <Image
                     src="/img/snapchat-icon.svg"
                     alt="Snapchat"
@@ -158,7 +158,7 @@ const PlanCard: React.FC<Plan> = (planData) => {
                     className="inline-block w-5"
                   />
                 )}
-                {Boolean(planData.has_tl) && (
+                {Boolean(planData.has_telegram) && (
                   <Image
                     src="/img/telegram-icon.svg"
                     alt="Telegram"

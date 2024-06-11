@@ -100,6 +100,11 @@ export default function PersonalDataForm() {
   useEffect(() => {
     const {docType, idFrontPicture, idBackPicture, idPassportPicture, curpError} = personalData
     //valid docType
+    if (!docType) {
+      SetErrorForm(true)
+      return;
+    }
+
     if (docType == "INE" && (!idFrontPicture || !idBackPicture)) {
       SetErrorForm(true)
       return;
@@ -408,7 +413,7 @@ export default function PersonalDataForm() {
               <option
                 value={'mexican'}
               >
-                Mexicano
+                Mexicana
               </option>
               <option
                 value={'foreign'}
@@ -902,7 +907,7 @@ export default function PersonalDataForm() {
               </div>
               <input
                 type="file"
-                accept={'.pdf'}
+                accept={'.pdf,.jpg,.jpeg,.png'}
                 className={'hidden'}
                 name={'idTaxPicture'}
                 onChange={handleFileChange}

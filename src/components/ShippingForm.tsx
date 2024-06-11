@@ -1,5 +1,5 @@
 "use client";
-import React, {useEffect, useMemo, useRef} from "react";
+import React, {useState, useEffect, useMemo, useRef} from "react";
 import {useAppDispatch, useAppSelector} from "@/lib/hooks";
 import {
   setIsEsim,
@@ -33,6 +33,7 @@ export default function ShippingForm() {
   const personalData = useAppSelector((state) => state.personalData);
   const plan = useAppSelector((state) => state.plan);
   const shipping = useAppSelector((state) => state.shipping);
+  const [colonies, setColonies] = useState([]);
   const fieldsOrder: (keyof typeof shipping)[] = useMemo(() => [
     'zipCode',
     'neighborhood',
@@ -114,6 +115,48 @@ export default function ShippingForm() {
     }
   }
 
+  useEffect(() => { 
+    if (shipping.zipCode.length === 5) {
+      fetch(`https://maps.googleapis.com/maps/api/geocode/json?components=postal_code:${shipping.zipCode}|country:MX&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.status !== 'OK') {
+            dispatch(setState(''));
+            dispatch(setCity(''));
+            setColonies([]);
+            return;
+          }
+    
+          let state = '';
+          let city = '';
+          let colonies = [];
+    
+          data.results[0].address_components.forEach(component => {
+            if (component.types.includes('administrative_area_level_1')) {
+              state = component.long_name;
+            }
+            if (component.types.includes('locality') || component.types.includes('political')) {
+              city = component.long_name;
+            }
+          });
+
+          data.results[0].postcode_localities.forEach(colony => {
+            colonies.push(colony);
+          });
+    
+          dispatch(setState(state));
+          dispatch(setCity(city));
+          setColonies(colonies);
+        })
+        .catch(error => {
+          console.error('Error fetching geocode data:', error);
+          dispatch(setState(''));
+          dispatch(setCity(''));
+          setColonies([]);
+        });
+    } 
+  }, [shipping.zipCode]);
+
   const handleNextForm = () => {
     dispatch(setShowTaxDataForm(true));
   }
@@ -165,9 +208,13 @@ export default function ShippingForm() {
         <p className={`font-medium text-black text-center font-base mb-4`}>
           Si tu dispositivo es compatible con tarjeta SIM y eSIM, elige la que prefieras
         </p>
-        {shipping.isEsim && !plan.supportEsim && (
+        {shipping.isValidated && (
           <p className={'text-highlight-red text-base text-center mt-1'}>
             * El dispositivo validado no es compatible con eSIM. ¿Estás seguro que deseas continuar con esta opción?
+          </p>
+         ) || shipping.isEsim && !plan.supportEsim && (
+          <p className={'text-highlight-red text-base text-center mt-1'}>
+            * No has validado tu dispositivo. ¿Estás seguro que deseas continuar con esta opción?
           </p>
          )}
       </header>
@@ -299,13 +346,12 @@ export default function ShippingForm() {
               className={'col-span-12 sm:col-span-6'}
             >
               <input
-                type="text"
                 className={`input input-border-black ${shipping.zipCodeError ? 'input-error' : ''}`}
                 placeholder="Código postal*"
                 value={shipping.zipCode}
                 name={'zipCode'}
                 onChange={handleInputChange}
-                ref={el => inputRefs.current.zipCode = el}
+                ref={el => { inputRefs.current.zipCode = el; }}
                 maxLength={5}
               />
               {/* error */}
@@ -321,15 +367,18 @@ export default function ShippingForm() {
             <div
               className={'col-span-12 sm:col-span-6'}
             >
-              <input
-                type="text"
-                className={`input input-border-black ${shipping.neighborhoodError ? 'input-error' : ''}`}
-                placeholder="Colonia*"
-                value={shipping.neighborhood}
-                name={'neighborhood'}
-                onChange={handleInputChange}
-                ref={el => inputRefs.current.neighborhood = el}
-              />
+              <select
+              value={shipping.neighborhood}
+              className={`input input-border-black`}
+              name={'neighborhood'}
+              onChange={handleInputChange}
+            >
+              <option value={''}>Selecciona una colonia*</option>
+              {colonies.map((colony: string, index: number) => (
+                <option key={index} value={colony}>{colony}</option>
+              ))}
+              
+            </select>
               {/* error */}
               {shipping.neighborhoodError && (
                 <p

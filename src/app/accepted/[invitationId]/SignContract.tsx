@@ -69,7 +69,7 @@ const SignContract: React.FC<SignContractProps> = ({ invitationId }) => {
       <header className="px-24">
         <h3 className={'font-medium text-white text-center text-3xl sm:text-5xl mb-3'}>
           Estas a un paso de descubrir más <span className="text-highlight">conectividad </span>
-          y más <span className="text-highlight">comunicación</span>
+          y más <span className="text-highlight">conexión</span>
         </h3>
         
         <p className={'text-base text-white text-center px-16 my-10'}>
