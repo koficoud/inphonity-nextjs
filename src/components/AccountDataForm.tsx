@@ -246,7 +246,7 @@ export default function AccountDataForm() {
               name={`bankAccountNumber`}
               onChange={handleInputChange}
               onBlur={handleAccountNumber}
-              ref={el => inputRefs.current.bankAccountNumber = el}
+              ref={el => {inputRefs.current.bankAccountNumber = el}}
             />
             {/* error */}
             {accountData.bankAccountNumberError && (
@@ -266,7 +266,7 @@ export default function AccountDataForm() {
               name={`bankAccountNumberConfirmation`}
               onChange={handleInputChange}
               onBlur={handleAccountNumber}
-              ref={el => inputRefs.current.bankAccountNumberConfirmation = el}
+              ref={el => {inputRefs.current.bankAccountNumberConfirmation = el}}
             />
           </div>
 
@@ -280,7 +280,7 @@ export default function AccountDataForm() {
               name={`interbankClabe`}
               onChange={handleInputChange}
               onBlur={handleErrorClave}
-              ref={el => inputRefs.current.interbankClabe = el}
+              ref={el => {inputRefs.current.interbankClabe = el}}
               minLength={18}
               maxLength={18}
             />
@@ -302,7 +302,7 @@ export default function AccountDataForm() {
               name={`interbankClabeConfirmation`}
               onChange={handleInputChange}
               onBlur={handleClave}
-              ref={el => inputRefs.current.interbankClabeConfirmation = el}
+              ref={el => {inputRefs.current.interbankClabeConfirmation = el}}
               minLength={18}
               maxLength={18}
             />
