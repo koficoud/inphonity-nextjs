@@ -345,7 +345,7 @@ export default function PersonalDataForm() {
               value={personalData.name}
               name={'name'}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.name = el}
+              ref={el => {inputRefs.current.name = el}}
             />
             {/* error */}
             {personalData.nameError && (
@@ -367,7 +367,7 @@ export default function PersonalDataForm() {
               value={personalData.lastName}
               name={'lastName'}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.lastName = el}
+              ref={el => {inputRefs.current.lastName = el}}
             />
             {/* error */}
             {personalData.lastNameError && (
@@ -389,7 +389,7 @@ export default function PersonalDataForm() {
               value={personalData.secondLastName}
               name={'secondLastName'}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.secondLastName = el}
+              ref={el => {inputRefs.current.secondLastName = el}}
             />
             {/* error */}
             {personalData.secondLastNameError && (
@@ -407,7 +407,7 @@ export default function PersonalDataForm() {
               className={`input input-border-black`}
               name="nationality"
               onChange={handleInputChange}
-              ref={el => inputRefs.current.nationality = el}
+              ref={el => {inputRefs.current.nationality = el}}
             >
               <option disabled value="" aria-readonly>Nacionalidad*</option>
               <option
@@ -437,7 +437,7 @@ export default function PersonalDataForm() {
               value={personalData.dateOfBirth}
               name={'dateOfBirth'}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.dateOfBirth = el}
+              ref={el => {inputRefs.current.dateOfBirth = el}}
               max={maxDate}
             />
             {/* error */}
@@ -513,7 +513,7 @@ export default function PersonalDataForm() {
               name={'curp'}
               onChange={handleInputChange}
               onBlur={handleCurp}
-              ref={el => inputRefs.current.curp = el}
+              ref={el => {inputRefs.current.curp = el}}
               minLength={18}
               maxLength={18}
             />
@@ -534,7 +534,7 @@ export default function PersonalDataForm() {
               className={`input input-border-black ${personalData.genderError ? 'input-error' : ''}`}
               name={'gender'}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.gender = el}
+              ref={el => {inputRefs.current.gender = el}}
             >
               <option disabled value="">Sexo*</option>
               <option
@@ -567,7 +567,7 @@ export default function PersonalDataForm() {
               value={personalData.phone}
               name={'phone'}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.phone = el}
+              ref={el => {inputRefs.current.phone = el}}
             />
             {/* error */}
             {personalData.phoneError && (
@@ -588,7 +588,7 @@ export default function PersonalDataForm() {
               value={personalData.email}
               name={'email'}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.email = el}
+              ref={el => {inputRefs.current.email = el}}
             />
             {/* error */}
             {personalData.emailError && (
@@ -690,7 +690,7 @@ export default function PersonalDataForm() {
                   className={'hidden'}
                   name={'idFrontPicture'}
                   onChange={handleFileChange}
-                  ref={el => inputRefs.current.idFrontPicture = el}
+                  ref={el => {inputRefs.current.idFrontPicture = el}}
                 />
               </label>
               {/* error */}
@@ -748,7 +748,7 @@ export default function PersonalDataForm() {
                   className={'hidden'}
                   name={'idBackPicture'}
                   onChange={handleFileChange}
-                  ref={el => inputRefs.current.idBackPicture = el}
+                  ref={el => {inputRefs.current.idBackPicture = el}}
                 />
               </label>
               {/* error */}
@@ -807,7 +807,7 @@ export default function PersonalDataForm() {
                     className={'hidden'}
                     name={'idPassportPicture'}
                     onChange={handleFileChange}
-                    ref={el => inputRefs.current.idPassportPicture = el}
+                    ref={el => {inputRefs.current.idPassportPicture = el}}
                   />
                 </label>
                 {/* preview */}
@@ -857,7 +857,7 @@ export default function PersonalDataForm() {
                 className={'hidden'}
                 name={'idAddressPicture'}
                 onChange={handleFileChange}
-                ref={el => inputRefs.current.idAddressPicture = el}
+                ref={el => {inputRefs.current.idAddressPicture = el}}
               />
             </label>
             {/* error */}
@@ -911,7 +911,7 @@ export default function PersonalDataForm() {
                 className={'hidden'}
                 name={'idTaxPicture'}
                 onChange={handleFileChange}
-                ref={el => inputRefs.current.idTaxPicture = el}
+                ref={el => {inputRefs.current.idTaxPicture = el}}
               />
             </label>
             {/* error */}

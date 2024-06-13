@@ -33,7 +33,7 @@ export default function ShippingForm() {
   const personalData = useAppSelector((state) => state.personalData);
   const plan = useAppSelector((state) => state.plan);
   const shipping = useAppSelector((state) => state.shipping);
-  const [colonies, setColonies] = useState([]);
+  const [colonies, setColonies] = useState<Array<any>>([]);
   const fieldsOrder: (keyof typeof shipping)[] = useMemo(() => [
     'zipCode',
     'neighborhood',
@@ -129,9 +129,9 @@ export default function ShippingForm() {
     
           let state = '';
           let city = '';
-          let colonies = [];
+          let colonies: any[] | ((prevState: never[]) => never[]) = [];
     
-          data.results[0].address_components.forEach(component => {
+          data.results[0].address_components.forEach((component: { types: string | string[]; long_name: string; }) => {
             if (component.types.includes('administrative_area_level_1')) {
               state = component.long_name;
             }
@@ -140,7 +140,7 @@ export default function ShippingForm() {
             }
           });
 
-          data.results[0].postcode_localities.forEach(colony => {
+          data.results[0].postcode_localities.forEach((colony: any) => {
             colonies.push(colony);
           });
     
@@ -282,7 +282,7 @@ export default function ShippingForm() {
                 value={shipping.street}
                 name={'street'}
                 onChange={handleInputChange}
-                ref={el => inputRefs.current.street = el}
+                ref={el => {inputRefs.current.street = el}}
               />
               {/* error */}
               {shipping.streetError && (
@@ -305,7 +305,7 @@ export default function ShippingForm() {
                 value={shipping.number}
                 name={'number'}
                 onChange={handleInputChange}
-                ref={el => inputRefs.current.number = el}
+                ref={el => {inputRefs.current.number = el}}
               />
               {/* error */}
               {shipping.numberError && (
@@ -328,7 +328,7 @@ export default function ShippingForm() {
                 value={shipping.interiorNumber}
                 name={'interiorNumber'}
                 onChange={handleInputChange}
-                ref={el => inputRefs.current.interiorNumber = el}
+                ref={el => {inputRefs.current.interiorNumber = el}}
               />
               {/* error */}
               {shipping.interiorNumberError && (
@@ -400,7 +400,7 @@ export default function ShippingForm() {
                 value={shipping.state}
                 name={'state'}
                 onChange={handleInputChange}
-                ref={el => inputRefs.current.state = el}
+                ref={el => {inputRefs.current.state = el}}
               />
               {/* error */}
               {shipping.stateError && (
@@ -422,7 +422,7 @@ export default function ShippingForm() {
                 value={shipping.city}
                 name={'city'}
                 onChange={handleInputChange}
-                ref={el => inputRefs.current.city = el}
+                ref={el => {inputRefs.current.city = el}}
               />
               {/* error */}
               {shipping.cityError && (
@@ -445,7 +445,7 @@ export default function ShippingForm() {
                 value={shipping.complement}
                 name={'complement'}
                 onChange={handleInputChange}
-                ref={el => inputRefs.current.complement = el}
+                ref={el => {inputRefs.current.complement = el}}
               />
               {/* error */}
               {shipping.complementError && (

@@ -2,15 +2,19 @@
 import React, { useEffect } from "react";
 import Script from "next/script";
 
+declare global {
+  interface Window {
+    FrontChat: any;
+  }
+}
+
 const ChatInitializer = () => {
   useEffect(() => {
-    // Inicializar FrontChat solo cuando la librería está disponible
     if (window.FrontChat) {
       window.FrontChat("init", {
         chatId: "d6353afc25546e5590163b5dfff6bd55",
       });
     } else {
-      // En caso de que el script tarde en cargar
       const interval = setInterval(() => {
         if (window.FrontChat) {
           clearInterval(interval);
@@ -18,11 +22,15 @@ const ChatInitializer = () => {
             chatId: "d6353afc25546e5590163b5dfff6bd55",
           });
         }
-      }, 100); // Revisa cada 100ms
+      }, 500);
     }
   }, []);
 
-  return null;
+  return (
+    <>
+      {/* Component JSX */}
+    </>
+  );
 };
 
 export default ChatInitializer;

@@ -228,7 +228,7 @@ export default function TaxDataForm() {
               name={'rfc'}
               onChange={handleInputChange}
               onBlur={handleRfc}
-              ref={el => inputRefs.current.rfc = el}
+              ref={el => {inputRefs.current.rfc = el}}
               maxLength={13}
               minLength={13}
             />
@@ -273,7 +273,7 @@ export default function TaxDataForm() {
               value={taxData.street}
               name={`street`}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.street = el}
+              ref={el => {inputRefs.current.street = el}}
             />
             {/* error */}
             {taxData.streetError && (
@@ -296,7 +296,7 @@ export default function TaxDataForm() {
               value={taxData.exteriorNumber}
               name={`exteriorNumber`}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.exteriorNumber = el}
+              ref={el => {inputRefs.current.exteriorNumber = el}}
             />
             {/* error */}
             {taxData.exteriorNumberError && (
@@ -319,7 +319,7 @@ export default function TaxDataForm() {
               value={taxData.interiorNumber}
               name={`interiorNumber`}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.interiorNumber = el}
+              ref={el => {inputRefs.current.interiorNumber = el}}
             />
             {/* error */}
             {taxData.interiorNumberError && (
@@ -342,7 +342,7 @@ export default function TaxDataForm() {
               value={taxData.zipCode}
               name={`zipCode`}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.zipCode = el}
+              ref={el => {inputRefs.current.zipCode = el}}
               maxLength={5}
             />
             {/* error */}
@@ -364,7 +364,7 @@ export default function TaxDataForm() {
               value={taxData.neighborhood}
               name={`neighborhood`}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.neighborhood = el}
+              ref={el => {inputRefs.current.neighborhood = el}}
             />
             {/* error */}
             {taxData.neighborhoodError && (
@@ -385,7 +385,7 @@ export default function TaxDataForm() {
               value={taxData.state}
               name={`state`}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.state = el}
+              ref={el => {inputRefs.current.state = el}}
             />
             {/* error */}
             {taxData.stateError && (
@@ -408,7 +408,7 @@ export default function TaxDataForm() {
               value={taxData.municipality}
               name={`municipality`}
               onChange={handleInputChange}
-              ref={el => inputRefs.current.municipality = el}
+              ref={el => {inputRefs.current.municipality = el}}
             />
             {/* error */}
             {taxData.municipalityError && (
