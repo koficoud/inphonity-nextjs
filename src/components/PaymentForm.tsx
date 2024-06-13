@@ -163,7 +163,8 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
       isSubmitting: true
     });
 
-    const invitationId = window.location.pathname.split("/")[2];
+    
+    const invitationId = atob(window.location.pathname.split("/")[2].replace("%3D", "="));
 
     // reset errors
     dispatch(taxDateResetErrors());
@@ -919,6 +920,7 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
               </div>
             )}
 
+            {/*
             <div
               className="col-span-12 text-3xl flex flex-col mt-10 mx-auto justify-between px-5 w-auto sm:w-[23.125rem] py-[3rem] h-[21.25rem] rounded-2xl border-2 border-black">
               <div className="flex justify-between mx-auto gap-x-8">
@@ -940,7 +942,7 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
               <div className="flex justify-center pt-0 md:pt-4">
                 <span className="text-4xl md:text-[3.125rem]">${formatNumber(Number(plan.price) + shippingCost)}</span>
               </div>
-            </div>
+            </div> */}
 
             <div className={'col-span-12 my-10'}>
               <div className="flex justify-center">

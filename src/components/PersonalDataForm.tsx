@@ -632,7 +632,7 @@ export default function PersonalDataForm() {
               <option
                 value={'digital-platforms'}
               >
-                Plataformas digitales
+                Plataformas digitales (Uber, DiDi, Rappi)
               </option>
               <option
                 value={'retired'}

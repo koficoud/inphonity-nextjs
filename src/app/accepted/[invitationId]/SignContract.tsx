@@ -84,6 +84,18 @@ const SignContract: React.FC<SignContractProps> = ({ invitationId }) => {
               &nbsp; Confirmo que toda la información proporcionada es correcta
             </label>
         </p>
+        <p className={'text-base text-white text-center px-16 my-10'}>
+          <input
+              type="checkbox"
+              id={'public'}
+              className="form-checkbox green-check h-5 w-5 text-green-500"
+              name={'public'}
+              onChange={handleCheckboxChange}
+            />
+            <label htmlFor={'public'}>
+            &nbsp; Acepto recibir notificaciones, promociones y actualizaciones sobre los beneficios de inphonity
+            </label>
+        </p>
       </header>
       
       <div className="my-10">
