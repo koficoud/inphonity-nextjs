@@ -2,6 +2,7 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Invitation, invitationsApi} from "@/lib/services/invitationsApi";
 
 export interface TaxData {
+  name: string;
   rfc: string;
   fiscalRegime: string;
   rfcError: string;
@@ -27,6 +28,7 @@ export interface TaxData {
 }
 
 const initialState: TaxData = {
+  name: "",
   rfc: "",
   fiscalRegime: '',
   rfcError: "",
@@ -56,6 +58,7 @@ name: "taxData",
   initialState,
   reducers: {
     resetTaxData: (state) => {
+      state.name = "";
       state.rfc = "";
       state.fiscalRegime = '';
       state.rfcError = "";
@@ -91,6 +94,9 @@ name: "taxData",
       state.taxZipCodeError = "";
       state.stateError = "";
       state.municipalityError = "";
+    },
+    setName: (state, action: PayloadAction<string>) => {
+      state.name = action.payload;
     },
     setRfc: (state, action: PayloadAction<string>) => {
       state.rfc = action.payload;
@@ -188,6 +194,7 @@ name: "taxData",
 export const {
   resetErrors,
   resetTaxData,
+  setName,
   setRfc,
   setRfcError,
   setFiscalRegime,

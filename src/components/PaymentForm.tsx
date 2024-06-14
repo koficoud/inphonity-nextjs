@@ -137,12 +137,32 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
     isSubmitting: false,
   });
   const [mitIframe, setMitIframe] = useState('');
-  const [tokuIframe, setTokuIframe] = useState('');
+  const [tokuIframeCard, setTokuIframeCard] = useState('');
+  const [tokuIframeSpei, setTokuIframeSpei] = useState('');
+  const [tokuIframeCash, setTokuIframeCash] = useState('');
+  const [tokuIframeCodi, setTokuIframeCodi] = useState('');
   const [echoInstance, setEchoInstance] = useState<any>(null);
   const [mitAttempts, setMitAttempts] = useState(0);
 
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
+    switch (tab) {
+      case "1":
+        fetchMitIframe();
+        break;
+      case "2":
+        fetchTokuIframe("card");
+        break;
+      case "3":
+        fetchTokuIframe("transfer");
+        break;
+      case "4":
+        fetchTokuIframe("paycash");
+        break;
+      case "5":
+        fetchTokuIframe("codi");
+        break;
+    }
   };
 
   const handleTestModal = (method: string, onlySaveRegister = false) => {
@@ -205,6 +225,7 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
         address_number: shippingData.number,
         address_interior_number: shippingData.interiorNumber,
         address: shippingData.street,
+        name: taxData.name,
         rfc: taxData.rfc,
         fiscal_regime: taxData.fiscalRegime,
         tax_zip_code: taxData.zipCode,
@@ -697,6 +718,9 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
    */
   const fetchMitIframe = async () => {
     try {
+      if (mitIframe) {
+        return;
+      }
       const api = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
       const response = await fetch(`${api}/api/pre-register/${invitationId}/pay-with-mit`);
       const data = await response.json();
@@ -710,17 +734,44 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
   /**
    * Fetches the iframe to pay with Toku.
    */
-  const fetchTokuIframe = async () => {
+  const fetchTokuIframe = async (gateway: 'card' | 'transfer' | 'paycash' | 'codi') => {
     try {
+      const gatewayStateMap: { [key: string]: string | null } = {
+        card: tokuIframeCard,
+        transfer: tokuIframeSpei,
+        paycash: tokuIframeCash,
+        codi: tokuIframeCodi
+      };
+  
+      const setGatewayStateMap: { [key: string]: (url: string) => void } = {
+        card: setTokuIframeCard,
+        transfer: setTokuIframeSpei,
+        paycash: setTokuIframeCash,
+        codi: setTokuIframeCodi
+      };
+  
+      if (gatewayStateMap[gateway]) {
+        return;
+      }
+  
       const api = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
-      const response = await fetch(`${api}/api/pre-register/${invitationId}/pay-with-toku`);
+      const response = await fetch(`${api}/api/pre-register/${invitationId}/pay-with-toku?gateway=${gateway}`);
       const data = await response.json();
-
-      setTokuIframe(data.url);
+  
+      if (gateway === "card" || gateway === "codi") {
+        setGatewayStateMap[gateway](data.iframe);
+      }
+      if (gateway === "transfer") {
+        setGatewayStateMap[gateway](data.clabe);
+      }
+      if (gateway === "paycash") {
+        setGatewayStateMap[gateway](data.paycash.barcode_url);
+      }
     } catch (error) {
       console.error(error);
     }
   }
+  
 
   useEffect(() => {
     if (registerError && 'data' in registerError) {
@@ -813,7 +864,7 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
 
   useEffect(() => {
     if (activeTab === "toku") {
-      fetchTokuIframe();
+      fetchTokuIframe('card');
     }
   }, [activeTab]);
 
@@ -865,7 +916,7 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
 
   useEffect(() => {
     if (mitAttempts === 2) {
-      setActiveTab('toku');
+      setActiveTab('2');
     }
   }, [mitAttempts]);
 
@@ -891,14 +942,101 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
               ¿Cómo quieres realizar tu pago?
             </p>
           </header>
+          <div className="lg:container text-black text-base px-6 md:px-8 lg:px-10 xl:px-12">
+            <div className="mb-5">
+              <span className="mr-10">
+                <Image
+                  src={'/img/pago-card.svg'}
+                  alt={'Pago con tarjeta'}
+                  width={39.33}
+                  height={27.42}
+                  className={'inline-block w-5 font-medium'}
+                />
+              </span>
+              <span className="mr-10 inline-block align-sub">
+                <input name="activeTab" type="radio" className="radio" checked={activeTab == "1"} onChange={() => handleTabClick("1")} />
+              </span>
+              <label>
+                <span>Pago con tarjeta visa / mastercard.</span>
+              </label>
+            </div>
+            <div className="mb-5">
+              <span className="mr-10">
+                <Image
+                  src={'/img/pago-card.svg'}
+                  alt={'Pago con efectivo'}
+                  width={39.33}
+                  height={27.42}
+                  className={'inline-block w-5 font-medium'}
+                />
+              </span>
+              <span className="mr-10 inline-block align-sub">
+                <input name="activeTab" type="radio" className="radio" checked={activeTab == "2"} onChange={() => handleTabClick("2")} />
+              </span>
+              <label>
+                <span>Pago con tarjeta AMEX</span>
+              </label>
+            </div>
+            <div className="mb-5">
+              <span className="mr-10">
+                <Image
+                  src={'/img/pago-transfer.svg'}
+                  alt={'Pago con efectivo'}
+                  width={39.33}
+                  height={27.42}
+                  className={'inline-block w-5 font-medium'}
+                />
+              </span>
+              <span className="mr-10 inline-block align-sub">
+                <input name="activeTab" type="radio" className="radio" checked={activeTab == "3"} onChange={() => handleTabClick("3")} />
+              </span>
+              <label>
+                <span>Pago via SPEI</span>
+              </label>
+            </div>
+            <div className="mb-5">
+              <span className="mr-10">
+                <Image
+                  src={'/img/pago-cash.svg'}
+                  alt={'Pago con transferencia'}
+                  width={39.33}
+                  height={27.42}
+                  className={'inline-block w-5 font-medium'}
+                />
+              </span>
+              <span className="mr-10 inline-block align-sub">
+                <input name="activeTab" type="radio" className="radio" checked={activeTab == "4"} onChange={() => handleTabClick("4")} />
+              </span>
+              <label>
+                <span> Pago en efectivo</span>
+              </label>
+            </div>
+            <div className="mb-5">
+              <span className="mr-10">
+                <Image
+                  src={'/img/pago-transfer.svg'}
+                  alt={'Pago con transferencia'}
+                  width={39.33}
+                  height={27.42}
+                  className={'inline-block w-5 font-medium'}
+                />
+              </span>
+              <span className="mr-10 inline-block align-sub">
+                <input name="activeTab" type="radio" className="radio" checked={activeTab == "5"} onChange={() => handleTabClick("5")} />
+              </span>
+              <label>
+                <span> Pago via CoDi</span>
+              </label>
+            </div>
+          </div>
           <div className="lg:container text-black font-medium px-6 md:px-8 lg:px-10 xl:px-12">
-            {activeTab === "Pago con tarjeta" && (
+            {activeTab === "1" && (
               <div
                 className={'grid grid-cols-12'}
                 id={'payment-card'}
               >
                 <p className={`col-span-12 text-2xl mb-5`}>
-                  Pago con Tarjeta de crédito y débito
+                  Pago con tarjeta visa / mastercard.
                 </p>
 
                 {mitIframe && (
@@ -907,15 +1045,68 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(({ invitationId }) =>
               </div>
             )}
 
-            {activeTab === 'toku' && (
+            {activeTab === "2" && (
               <div
                 className={'grid grid-cols-12'}
-                id={'payment-toku'}
+                id={'payment-card'}
               >
-                <p className={`col-span-12 text-2xl mb-5`}>Pago con Toku</p>
+                <p className={`col-span-12 text-2xl mb-5`}>
+                  Pago con tarjeta AMEX
+                </p>
 
-                {tokuIframe && (
-                  <iframe src={tokuIframe} className="col-span-12 h-[800px] border-0 w-full"/>
+                {tokuIframeCard && (
+                  <iframe src={tokuIframeCard} className="col-span-12 h-[800px] border-0 w-full"/>
+                )}
+              </div>
+            )}
+
+            {activeTab === "3" && (
+              <div
+                className={'grid grid-cols-12'}
+                id={'payment-card'}
+              >
+                <p className={`col-span-12 text-2xl mb-5`}>
+                  Pago via SPEI
+                </p>
+
+                <p className={`col-span-12 text-2xl mb-5`}>
+                  Puedes realizar tu pago via SPEI a la siguiente clabe.
+                </p>
+                <p className={`col-span-12 text-center text-2xl mb-5`}>
+                  {tokuIframeSpei}
+                </p>
+              </div>
+            )}
+
+            {activeTab === "4" && (
+              <div
+                className={'grid grid-cols-12'}
+                id={'payment-card'}
+              >
+                <p className={`col-span-12 text-2xl mb-5`}>
+                  Pago en efectivo
+                </p>
+
+                <p className={`col-span-12 text-xl mb-5`}>
+                  Puedes realizar tu pago en efectivo en las siguientes tiendas escaneando el código de barras.
+                </p>
+
+                {tokuIframeCash && (
+                  <iframe src={tokuIframeCash} className="col-span-12 h-[800px] border-0 w-full"/>
+                )}
+              </div>
+            )}
+            {activeTab === "5" && (
+              <div
+                className={'grid grid-cols-12'}
+                id={'payment-card'}
+              >
+                <p className={`col-span-12 text-2xl mb-5`}>
+                Pago via CoDi
+                </p>
+
+                {tokuIframeCodi && (
+                  <iframe src={tokuIframeCodi} className="col-span-12 h-[800px] border-0 w-full"/>
                 )}
               </div>
             )}

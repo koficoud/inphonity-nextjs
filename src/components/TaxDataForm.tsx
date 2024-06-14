@@ -1,7 +1,8 @@
 "use client";
-import React, {useEffect, useMemo, useRef} from "react";
+import React, {use, useEffect, useMemo, useRef} from "react";
 import {useAppDispatch, useAppSelector} from "@/lib/hooks";
 import {
+  setName,
   setRfc,
   setFiscalRegime,
   setStreet,
@@ -24,6 +25,7 @@ export default function TaxDataForm() {
   const shipping = useAppSelector((state) => state.shipping);
   const personalData = useAppSelector((state) => state.personalData);
   const fieldsOrder: (keyof typeof taxData)[] = useMemo(() => [
+    "name",
     "rfc",
     'fiscalRegime',
     "street",
@@ -177,6 +179,11 @@ export default function TaxDataForm() {
       dispatch(setShowAccountDataForm(true));
   }
 
+  useEffect(() => {
+    const fullName = `${personalData.name} ${personalData.lastName} ${personalData.secondLastName}`;
+    dispatch(setName(fullName));
+  },);
+
   return (
     <div className={'p-3 md:p-6 lg:p-9 xl:p-12'} id="TaxFormSection" >
       {/* header */}
@@ -218,6 +225,19 @@ export default function TaxDataForm() {
             </label>
           </div>
 
+          <div className={'col-span-12'}>
+            <input
+              type="text"
+              className={`input input-border-black`}
+              placeholder={`Nombre Completo*`}
+              value={taxData.name}
+              name={'name'}
+              disabled
+              onChange={handleInputChange}
+              onBlur={handleRfc}
+              ref={el => {inputRefs.current.name = el}}
+            />
+          </div>
            {/* rfc */}
            <div className={'col-span-12'}>
             <input
