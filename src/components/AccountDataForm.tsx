@@ -22,6 +22,9 @@ const firstGroup = [
   'Banco del Bajio',
   'Azteca',
   'Monex',
+];
+
+const secondGroup = [
   'ABC CAPITAL',
   'ABN AMRO BANK MEXICO, S.A. (Royal Bank)',
   'ACCIVAL CASA DE BOLSA',
@@ -119,46 +122,6 @@ const firstGroup = [
   'VOLKSWAGEN BANK',
   'ZURICH COMPAÑÍA DE SEGUROS',
   'ZURICHVI VIDA, COMPAÑÍA DE SEGUROS',
-];
-
-const secondGroup = [
-  'ABC Capital',
-  'Afirme',
-  'Mifel',
-  'Actinver',
-  'Autofin México',
-  'Bancrea',
-  'Bineo',
-  'Covalto',
-  'Compartamos',
-  'Credit Suisse (México)',
-  'Banco de Inversión Afirme',
-  'Forjadores',
-  'Inmobiliario Mexicano',
-  'Invex',
-  'JP Morgan',
-  'KEB Hana México',
-  'Monex',
-  'Multiva',
-  'PagaTodo',
-  'Regional de Monterrey',
-  'S3 Caceis México',
-  'Sabadell',
-  'Shinhan de México',
-  'Ve por Más',
-  'Bank of America Mexico',
-  'Bank of China Mexico',
-  'Bankaool',
-  'Bansí',
-  'Barclays Bank México',
-  'BNP Paribas',
-  'CIBanco',
-  'Consubanco',
-  'Fundación Dondé Banco',
-  'Industrial and Commercial Bank of China',
-  'Intercam Banco',
-  'Mizuho Bank',
-  'MUFG Bank Mexico'
 ];
 
 firstGroup.sort();

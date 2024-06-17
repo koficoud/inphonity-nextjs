@@ -8,10 +8,11 @@ import { request } from "@/mocks/request-data";
 
 type SignContractProps = {
   invitationId: string;
+  invitationIdDecoded: string;
 };
-const SignContract: React.FC<SignContractProps> = ({ invitationId }) => {
+const SignContract: React.FC<SignContractProps> = ({ invitationId, invitationIdDecoded }) => {
   const router = useRouter();
-  const { isLoading: invitationIsLoading, isFetching: invitationIsFetching, data: invitationData, error: invitationError, refetch: invitationRefetch } = useGetInvitationByIdQuery(invitationId);
+  const { isLoading: invitationIsLoading, isFetching: invitationIsFetching, data: invitationData, error: invitationError, refetch: invitationRefetch } = useGetInvitationByIdQuery(invitationIdDecoded);
   // const { isLoading: invitationIsLoading, isFetching: invitationIsFetching, data: invitationData, error: invitationError, refetch: invitationRefetch } = request;
   const [isTermsAccepted, setIsTermsAccepted] = React.useState(false);
   const [isConfirmationAccepted, setIsConfirmationAccepted] = React.useState(false);
@@ -60,7 +61,6 @@ const SignContract: React.FC<SignContractProps> = ({ invitationId }) => {
       return;
     }
 
-    // redirect to sign contract sign/{invitationId}
     router.push(`/sign/${invitationId}`);
   }
 

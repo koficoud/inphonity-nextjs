@@ -42,7 +42,8 @@ export default function Accepted({ params }: { params: { invitationId: string } 
         />
         {invitationData && invitationData.status === 'accepted' && (
           <SignContract
-            invitationId={invitationIdDecoded!}
+            invitationId={params.invitationId!}
+            invitationIdDecoded={invitationIdDecoded!}
           />
         )}
       </main>
