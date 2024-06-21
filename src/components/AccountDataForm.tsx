@@ -13,15 +13,15 @@ import { ModalContext } from "@/contexts/ModalContext";
 
 const firstGroup = [
   'BBVA',
-  'Santader',
-  'Banamex',
-  'Banorte / Ixe',
+  'SANTANDER',
+  'BANAMEX',
+  'BANORTE / IXE', 
   'HSBC',
-  'Scotiabank',
-  'Inbursa',
-  'Banco del Bajio',
-  'Azteca',
-  'Monex',
+  'SCOTIABANK',
+  'INBURSA',
+  'BANCO DEL BAJIO',
+  'BANCO AZTECA',
+  'MONEX',
 ];
 
 const secondGroup = [
