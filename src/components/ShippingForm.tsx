@@ -208,11 +208,12 @@ export default function ShippingForm() {
         <p className={`font-medium text-black text-center font-base mb-4`}>
           Si tu dispositivo es compatible con tarjeta SIM y eSIM, elige la que prefieras
         </p>
-        {shipping.isValidated && (
+        {shipping.isValidated && !plan.supportEsim && shipping.isEsim && (
           <p className={'text-highlight-red text-base text-center mt-1'}>
             * El dispositivo validado no es compatible con eSIM. ¿Estás seguro que deseas continuar con esta opción?
           </p>
-         ) || shipping.isEsim && !plan.supportEsim && (
+         )}
+          {shipping.isEsim && !plan.supportEsim && !shipping.isValidated && (
           <p className={'text-highlight-red text-base text-center mt-1'}>
             * No has validado tu dispositivo. ¿Estás seguro que deseas continuar con esta opción?
           </p>

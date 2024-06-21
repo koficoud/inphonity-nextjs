@@ -1314,3 +1314,49 @@ polyline, polyline:hover, .image-gallery-svg, .image-gallery-svg:hover{
 .image-gallery-left-nav, .image-gallery-right-nav {
   top: 40% !important;
 }
+
+.stores-filled{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.images-div{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.stores-filled-div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  width: 70px;
+  height: 70px;
+  border: 1px solid #000;
+  margin: 5px;
+  border-radius: 20px;
+}
+
+.stores-filled-img{
+  padding: 10px;
+  width: 60px;
+  height: auto;
+}
+
+.stores-filled img:hover{
+  transform: scale(1.1);
+}
+
+.stores-filled-reference{
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
