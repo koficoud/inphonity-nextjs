@@ -1007,7 +1007,7 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(
       html2canvas(input as HTMLElement).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF();
-        pdf.addImage(imgData, "PNG", 0, 0, 0, 0);
+        pdf.addImage(imgData, "PNG", 0, 0, 210, 297);
         pdf.save("download.pdf");
       });
     };
@@ -1216,6 +1216,13 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(
                     <p className={`col-span-12 text-xl mb-5`}>
                       tiendas escaneando el código de barras.
                     </p>
+                    <Image
+                      src={tokuIframeCash}
+                      alt={`Image`}
+                      width={300}
+                      height={50}
+                    />
+                    <p>Referencia: {tokuIframeCashReference}</p>
                     <div className="images-div">
                       {images.map((src, index) => (
                         <div className={`stores-filled-div`}>
@@ -1262,13 +1269,6 @@ const PaymentForm: React.FC<PaymentFormProps> = React.memo(
                               </span>
                             </div>
                           </div>
-                          <Image
-                            src={tokuIframeCash}
-                            alt={`Image`}
-                            width={300}
-                            height={50}
-                          />
-                          <p>Referencia: {tokuIframeCashReference}</p>
                           <br />
                         </div>
                       </div>
