@@ -22,6 +22,7 @@ export interface Shipping {
   cityError: string;
   showTaxDataForm: boolean;
   isValidated: boolean;
+  isCompatibleImei: boolean;
 }
 
 const initialState: Shipping = {
@@ -45,6 +46,7 @@ const initialState: Shipping = {
   cityError: "",
   showTaxDataForm: false,
   isValidated: false,
+  isCompatibleImei: true,
 }
 
 const shippingSlice = createSlice({
@@ -72,6 +74,7 @@ const shippingSlice = createSlice({
       state.cityError = "";
       state.showTaxDataForm = false;
       state.isValidated = false;
+      state.isCompatibleImei = true;
     },
     resetErrors: (state) => {
       state.isEsimError = "";
@@ -89,6 +92,9 @@ const shippingSlice = createSlice({
     },
     setIsValidation: (state, action: PayloadAction<boolean>) => {
       state.isValidated = action.payload;
+    },
+    setIsCompatibleImei: (state, action: PayloadAction<boolean>) => {
+      state.isCompatibleImei = action.payload;
     },
     setEsimError: (state, action: PayloadAction<string>) => {
       state.isEsimError = action.payload;
@@ -172,6 +178,7 @@ export const {
   setIsEsim,
   setEsimError,
   setIsValidation,
+  setIsCompatibleImei,
   setZipCode,
   setZipCodeError,
   setNeighborhood,

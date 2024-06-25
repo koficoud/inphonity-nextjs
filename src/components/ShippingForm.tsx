@@ -1,6 +1,6 @@
 "use client";
-import React, {useState, useEffect, useMemo, useRef} from "react";
-import {useAppDispatch, useAppSelector} from "@/lib/hooks";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import {
   setIsEsim,
   setZipCode,
@@ -11,7 +11,7 @@ import {
   setComplement,
   setState,
   setCity,
-  setShowTaxDataForm
+  setShowTaxDataForm,
 } from "@/lib/features/shipping/shippingSlice";
 import {
   setStreet as setTaxStreet,
@@ -26,7 +26,6 @@ import {
 } from "@/lib/features/tax-data/taxDataSlice";
 import Image from "next/image";
 
-
 export default function ShippingForm() {
   const [myAddressAreEqual, setMyAddressAreEqual] = React.useState(false);
   const dispatch = useAppDispatch();
@@ -34,36 +33,38 @@ export default function ShippingForm() {
   const plan = useAppSelector((state) => state.plan);
   const shipping = useAppSelector((state) => state.shipping);
   const [colonies, setColonies] = useState<Array<any>>([]);
-  const fieldsOrder: (keyof typeof shipping)[] = useMemo(() => [
-    'zipCode',
-    'neighborhood',
-    'street',
-    'number',
-    'state',
-    'city',
-  ], []);
-  const inputRefs = useRef<{[key in keyof typeof shipping]: HTMLInputElement | HTMLSelectElement | null}>({} as {[key in keyof typeof shipping]: HTMLInputElement | null});
+  const fieldsOrder: (keyof typeof shipping)[] = useMemo(
+    () => ["zipCode", "neighborhood", "street", "number", "state", "city"],
+    []
+  );
+  const inputRefs = useRef<{
+    [key in keyof typeof shipping]: HTMLInputElement | HTMLSelectElement | null;
+  }>({} as { [key in keyof typeof shipping]: HTMLInputElement | null });
   const isValidForm = useMemo(() => {
-    return !fieldsOrder.some(field => {
-      if (!field.endsWith('Error')) {
+    return !fieldsOrder.some((field) => {
+      if (!field.endsWith("Error")) {
         return !shipping[field as keyof typeof shipping];
       }
       return false;
     });
   }, [fieldsOrder, shipping]);
 
-  useEffect(()=>{
-    if (shipping.showTaxDataForm){
-      let scrollSection = document.getElementById("TaxFormSection")?.getBoundingClientRect().top || 0
+  useEffect(() => {
+    if (shipping.showTaxDataForm) {
+      let scrollSection =
+        document.getElementById("TaxFormSection")?.getBoundingClientRect()
+          .top || 0;
       window.scrollTo({
         top: window.scrollY + scrollSection,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
-  },[shipping.showTaxDataForm])
+  }, [shipping.showTaxDataForm]);
 
   useEffect(() => {
-    const firstErrorField = fieldsOrder.find(field => shipping[`${field}Error` as keyof typeof shipping]);
+    const firstErrorField = fieldsOrder.find(
+      (field) => shipping[`${field}Error` as keyof typeof shipping]
+    );
     if (firstErrorField && inputRefs.current[firstErrorField]) {
       inputRefs.current[firstErrorField]!.focus();
     }
@@ -79,81 +80,94 @@ export default function ShippingForm() {
     shipping.cityError,
   ]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
 
     switch (name) {
-      case 'isEsim':
-        dispatch(setIsEsim(value === 'true'));
+      case "isEsim":
+        dispatch(setIsEsim(value === "true"));
         break;
-      case 'zipCode':
-        dispatch(setZipCode(value.replace(/\D/g, '')));
+      case "zipCode":
+        dispatch(setZipCode(value.replace(/\D/g, "")));
         break;
-      case 'neighborhood':
+      case "neighborhood":
         dispatch(setNeighborhood(value));
         break;
-      case 'street':
+      case "street":
         dispatch(setStreet(value));
         break;
-      case 'number':
-        dispatch(setNumber(value.replace(/[^A-Za-z0-9_\u00C0-\u017F]/g, '')));
+      case "number":
+        dispatch(setNumber(value.replace(/[^A-Za-z0-9_\u00C0-\u017F]/g, "")));
         break;
-      case 'interiorNumber':
-        dispatch(setInteriorNumber(value.replace(/[^A-Za-z0-9_\u00C0-\u017F]/g, '')));
+      case "interiorNumber":
+        dispatch(
+          setInteriorNumber(value.replace(/[^A-Za-z0-9_\u00C0-\u017F]/g, ""))
+        );
         break;
-      case 'complement':
+      case "complement":
         dispatch(setComplement(value));
         break;
-      case 'state':
+      case "state":
         dispatch(setState(value));
         break;
-      case 'city':
+      case "city":
         dispatch(setCity(value));
         break;
       default:
         break;
     }
-  }
+  };
 
-  useEffect(() => { 
+  useEffect(() => {
     if (shipping.zipCode.length === 5) {
       fetch(`https://testinphonity.com/api/sepomex/${shipping.zipCode}`)
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           if (data.length === 0) {
-            dispatch(setState(''));
-            dispatch(setCity(''));
+            dispatch(setState(""));
+            dispatch(setCity(""));
             setColonies([]);
             return;
           }
-          let state = '';
-          let city = '';
+          let state = "";
+          let city = "";
           let colonies: any[] | ((prevState: never[]) => never[]) = [];
-    
-          data.forEach((component: { d_estado: string; types: string; d_ciudad: string; d_asenta: string; }) => {
-            state = component.d_estado;
-            city = component.d_ciudad;
-            colonies.push(component.d_asenta);
-          });
-    
+
+          data.forEach(
+            (component: {
+              d_estado: string;
+              types: string;
+              d_ciudad: string;
+              d_asenta: string;
+            }) => {
+              state = component.d_estado;
+              city = component.d_ciudad;
+              colonies.push(component.d_asenta);
+            }
+          );
+
           dispatch(setState(state));
           dispatch(setCity(city));
           setColonies(colonies);
         })
-        .catch(error => {
-          console.error('Error fetching geocode data:', error);
-          dispatch(setState(''));
-          dispatch(setCity(''));
+        .catch((error) => {
+          console.error("Error fetching geocode data:", error);
+          dispatch(setState(""));
+          dispatch(setCity(""));
           setColonies([]);
         });
-    } 
+    }
   }, [shipping.zipCode]);
 
   const handleNextForm = () => {
     dispatch(setShowTaxDataForm(true));
-  }
+  };
 
-  const handleMyAddressAreEqualChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMyAddressAreEqualChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setMyAddressAreEqual(e.target.checked);
 
     // fill tax data form with shipping data
@@ -164,7 +178,7 @@ export default function ShippingForm() {
     }
 
     emptyTaxAddressData();
-  }
+  };
 
   const updateTaxAddressData = () => {
     dispatch(setTaxStreet(shipping.street));
@@ -176,319 +190,333 @@ export default function ShippingForm() {
     dispatch(setTaxState(shipping.state));
     dispatch(setTaxMunicipality(shipping.city));
     dispatch(setTaxEmail(personalData.email));
-  }
+  };
 
   const emptyTaxAddressData = () => {
-    dispatch(setTaxStreet(''));
-    dispatch(setTaxExteriorNumber(''));
-    dispatch(setTaxInteriorNumber(''));
-    dispatch(setTaxNeighborhood(''));
-    dispatch(setTaxZipCode(''));
-    dispatch(setTaxTaxZipCode(''));
-    dispatch(setTaxState(''));
-    dispatch(setTaxMunicipality(''));
-    dispatch(setTaxEmail(''));
-  }
+    dispatch(setTaxStreet(""));
+    dispatch(setTaxExteriorNumber(""));
+    dispatch(setTaxInteriorNumber(""));
+    dispatch(setTaxNeighborhood(""));
+    dispatch(setTaxZipCode(""));
+    dispatch(setTaxTaxZipCode(""));
+    dispatch(setTaxState(""));
+    dispatch(setTaxMunicipality(""));
+    dispatch(setTaxEmail(""));
+  };
 
   return (
-    <div className={'p-3 md:p-6 lg:p-9 xl:p-12 mb-6 bg-white'} id="ShippingFormSection">
+    <div
+      className={"p-3 md:p-6 lg:p-9 xl:p-12 mb-6 bg-white"}
+      id="ShippingFormSection"
+    >
       {/* header */}
       <header>
-        <h3 className={'font-medium text-black text-center text-3xl sm:text-5xl mb-1 sm:mb-3'}>
+        <h3
+          className={
+            "font-medium text-black text-center text-3xl sm:text-5xl mb-1 sm:mb-3"
+          }
+        >
           Elige tu tipo de <span className="text-custom-blue">SIM</span>
         </h3>
         <p className={`font-medium text-black text-center font-base mb-4`}>
-          Si tu dispositivo es compatible con tarjeta SIM y eSIM, elige la que prefieras
+          Si tu dispositivo es compatible con tarjeta SIM y eSIM, elige la que
+          prefieras
         </p>
         {shipping.isValidated && !plan.supportEsim && shipping.isEsim && (
-          <p className={'text-highlight-red text-base text-center mt-1'}>
-            * El dispositivo validado no es compatible con eSIM. ¿Estás seguro que deseas continuar con esta opción?
+          <p className={"text-highlight-red text-base text-center mt-1"}>
+            * El dispositivo validado no es compatible con eSIM. ¿Estás seguro
+            que deseas continuar con esta opción?
           </p>
-         )}
-          {shipping.isEsim && !plan.supportEsim && !shipping.isValidated && (
-          <p className={'text-highlight-red text-base text-center mt-1'}>
-            * No has validado tu dispositivo. ¿Estás seguro que deseas continuar con esta opción?
+        )}
+        {shipping.isEsim && !plan.supportEsim && !shipping.isValidated && (
+          <p className={"text-highlight-red text-base text-center mt-1"}>
+            * No has validado tu dispositivo. ¿Estás seguro que deseas continuar
+            con esta opción?
           </p>
-         )}
+        )}
+        {!shipping.isCompatibleImei && shipping.isValidated && (
+          <p className={"text-highlight-red text-base text-center mt-1"}>
+            * El equipo validado no es compatible con inphonity. ¿Estás seguro de que deseas continuar con esta opción?
+          </p>
+        )}
       </header>
 
-        {/* form */}
-        <div className={'lg:container mx-auto w-full'}>
-          <div className={'grid grid-cols-12 form-card gap-3 sm:gap-4 md:gap-5 lg:gap-6 w-full mx-auto p-6 md:p-8 lg:p-10 xl:p-12'}>
-            {/* is esim */}
-            <div className={'col-span-12'}>
-              <div className="mb-5">
-                <label>
-                  <input
-                    className={`${shipping.isEsimError ? 'input-error' : ''}`}
-                    style={{accentColor: '#EF7911'}}
-                    type="radio"
-                    name={'isEsim'}
-                    value={'false'}
-                    onChange={handleInputChange}
-                    checked={!shipping.isEsim}
-                  />
-                  <span className={`ml-2 inline-block text-black`}>
-                    Tarjeta SIM
-                  </span>
-                </label>
-              </div>
-              <div>
-                <label>
-                  <input
-                    className={`${shipping.isEsimError ? 'input-error' : ''}`}
-                    style={{accentColor: '#EF7911'}}
-                    type="radio"
-                    name={'isEsim'}
-                    value={'true'}
-                    onChange={handleInputChange}
-                    checked={shipping.isEsim}
-                  />
-                  <span className={`ml-2 inline-block text-black`}>
-                    Tarjeta eSIM
-                  </span>
-                </label>
-              </div>
-              {/* error */}
-              {shipping.isEsimError && (
-                <p
-                  className={'text-red-500 text-xs mt-1 mx-3'}
-                >
-                  {shipping.isEsimError}
-                </p>
-              )}
-            </div>
-
-            <div className={`col-span-12`}>
-              <p className={`font-medium text-black text-xl mb-4`}>
-                Dirección a la que llegará tu SIM de inphonity
-              </p>
-            </div>
-            {/* street */}
-            <div
-              className={'col-span-12'}
-            >
-              <input
-                type="text"
-                className={`input input-border-black ${shipping.streetError ? 'input-error' : ''}`}
-                placeholder="Calle*"
-                value={shipping.street}
-                name={'street'}
-                onChange={handleInputChange}
-                ref={el => {inputRefs.current.street = el}}
-              />
-              {/* error */}
-              {shipping.streetError && (
-                <p
-                  className={'text-red-500 text-xs mt-1 mx-3'}
-                >
-                  {shipping.streetError}
-                </p>
-              )}
-            </div>
-
-            {/* exterior number */}
-            <div
-              className={'col-span-12 sm:col-span-6'}
-            >
-              <input
-                type="text"
-                className={`input input-border-black ${shipping.numberError ? 'input-error' : ''}`}
-                placeholder="Número exterior*"
-                value={shipping.number}
-                name={'number'}
-                onChange={handleInputChange}
-                ref={el => {inputRefs.current.number = el}}
-              />
-              {/* error */}
-              {shipping.numberError && (
-                <p
-                  className={'text-red-500 text-xs mt-1 mx-3'}
-                >
-                  {shipping.numberError}
-                </p>
-              )}
-            </div>
-
-            {/* interior number */}
-            <div
-              className={'col-span-12 sm:col-span-6'}
-            >
-              <input
-                type="text"
-                className={`input input-border-black ${shipping.interiorNumberError ? 'input-error' : ''}`}
-                placeholder="Número interior"
-                value={shipping.interiorNumber}
-                name={'interiorNumber'}
-                onChange={handleInputChange}
-                ref={el => {inputRefs.current.interiorNumber = el}}
-              />
-              {/* error */}
-              {shipping.interiorNumberError && (
-                <p
-                  className={'text-red-500 text-xs mt-1 mx-3'}
-                >
-                  {shipping.interiorNumberError}
-                </p>
-              )}
-            </div>
-
-
-            {/* zip code */}
-            <div
-              className={'col-span-12 sm:col-span-6'}
-            >
-              <input
-                className={`input input-border-black ${shipping.zipCodeError ? 'input-error' : ''}`}
-                placeholder="Código postal*"
-                value={shipping.zipCode}
-                name={'zipCode'}
-                onChange={handleInputChange}
-                ref={el => { inputRefs.current.zipCode = el; }}
-                maxLength={5}
-              />
-              {/* error */}
-              {shipping.zipCodeError && (
-                <p
-                  className={'text-red-500 text-xs mt-1 mx-3'}
-                >
-                  {shipping.zipCodeError}
-                </p>
-              )}
-            </div>
-            {/* neighborhood */}
-            <div
-              className={'col-span-12 sm:col-span-6'}
-            >
-              <select
-              value={shipping.neighborhood}
-              className={`input input-border-black`}
-              name={'neighborhood'}
-              onChange={handleInputChange}
-            >
-              <option value={''}>Selecciona una colonia*</option>
-              {colonies.map((colony: string, index: number) => (
-                <option key={index} value={colony}>{colony}</option>
-              ))}
-              
-            </select>
-              {/* error */}
-              {shipping.neighborhoodError && (
-                <p
-                  className={'text-red-500 text-xs mt-1 mx-3'}
-                >
-                  {shipping.neighborhoodError}
-                </p>
-              )}
-            </div>
-
-            {/* state */}
-            <div
-              className={'col-span-12 sm:col-span-6'}
-            >
-              <input
-                type="text"
-                className={`input input-border-black ${shipping.stateError ? 'input-error' : ''}`}
-                placeholder="Estado*"
-                value={shipping.state}
-                name={'state'}
-                onChange={handleInputChange}
-                ref={el => {inputRefs.current.state = el}}
-              />
-              {/* error */}
-              {shipping.stateError && (
-                <p
-                  className={'text-red-500 text-xs mt-1 mx-3'}
-                >
-                  {shipping.stateError}
-                </p>
-              )}
-            </div>
-            {/* city */}
-            <div
-              className={'col-span-12 sm:col-span-6'}
-            >
-              <input
-                type="text"
-                className={`input input-border-black ${shipping.cityError ? 'input-error' : ''}`}
-                placeholder="Municipio/Alcaldía*"
-                value={shipping.city}
-                name={'city'}
-                onChange={handleInputChange}
-                ref={el => {inputRefs.current.city = el}}
-              />
-              {/* error */}
-              {shipping.cityError && (
-                <p
-                  className={'text-red-500 text-xs mt-1 mx-3'}
-                >
-                  {shipping.cityError}
-                </p>
-              )}
-            </div>
-
-            {/* complement */}
-            <div
-              className={'col-span-12'}
-            >
-              <input
-                type="text"
-                className={`input input-border-black ${shipping.complementError ? 'input-error' : ''}`}
-                placeholder={`Referencia*`}
-                value={shipping.complement}
-                name={'complement'}
-                onChange={handleInputChange}
-                ref={el => {inputRefs.current.complement = el}}
-              />
-              {/* error */}
-              {shipping.complementError && (
-                <p
-                  className={'text-red-500 text-xs mt-1 mx-3'}
-                >
-                  {shipping.complementError}
-                </p>
-              )}
-            </div>
-
-
-            <div className={'col-span-12 flex justify-between'}>
-              <div className="flex items-center text-white mb-2 ml-2">
+      {/* form */}
+      <div className={"lg:container mx-auto w-full"}>
+        <div
+          className={
+            "grid grid-cols-12 form-card gap-3 sm:gap-4 md:gap-5 lg:gap-6 w-full mx-auto p-6 md:p-8 lg:p-10 xl:p-12"
+          }
+        >
+          {/* is esim */}
+          <div className={"col-span-12"}>
+            <div className="mb-5">
+              <label>
                 <input
-                  type="checkbox"
-                  id={'myAddressAreEqual'}
-                  className="form-checkbox green-check h-5 w-5 text-green-500"
-                  name={'myAddressAreEqual'}
-                  onChange={handleMyAddressAreEqualChange}
+                  className={`${shipping.isEsimError ? "input-error" : ""}`}
+                  style={{ accentColor: "#EF7911" }}
+                  type="radio"
+                  name={"isEsim"}
+                  value={"false"}
+                  onChange={handleInputChange}
+                  checked={!shipping.isEsim}
                 />
-                <label htmlFor={'myAddressAreEqual'}>
-                  <span className={`ml-2 inline-block text-base text-black`}>Mi dirección de envío y facturación son iguales</span>
-                </label>
-              </div>
-              <div>
-                <span className={`text-base text-black font-medium`}>
-                  Campos Obligatorios*
+                <span className={`ml-2 inline-block text-black`}>
+                  Tarjeta SIM
                 </span>
-              </div>
+              </label>
             </div>
-
-            {/* next */}
-            {!shipping.showTaxDataForm && (
-              <div className={`col-span-12`}>
-                <div className="flex justify-center">
-                  <div className="button-container">
-                    <button
-                      className="btn-xl multi-border bg-black font-medium text-white disabled:opacity-50"
-                      onClick={handleNextForm}
-                      disabled={!isValidForm}
-                      >
-                      SIGUIENTE
-                    </button>
-                  </div>
-                </div>
-              </div>
+            <div>
+              <label>
+                <input
+                  className={`${shipping.isEsimError ? "input-error" : ""}`}
+                  style={{ accentColor: "#EF7911" }}
+                  type="radio"
+                  name={"isEsim"}
+                  value={"true"}
+                  onChange={handleInputChange}
+                  checked={shipping.isEsim}
+                />
+                <span className={`ml-2 inline-block text-black`}>
+                  Tarjeta eSIM
+                </span>
+              </label>
+            </div>
+            {/* error */}
+            {shipping.isEsimError && (
+              <p className={"text-red-500 text-xs mt-1 mx-3"}>
+                {shipping.isEsimError}
+              </p>
             )}
           </div>
+
+          <div className={`col-span-12`}>
+            <p className={`font-medium text-black text-xl mb-4`}>
+              Dirección a la que llegará tu SIM de inphonity
+            </p>
+          </div>
+          {/* street */}
+          <div className={"col-span-12"}>
+            <input
+              type="text"
+              className={`input input-border-black ${
+                shipping.streetError ? "input-error" : ""
+              }`}
+              placeholder="Calle*"
+              value={shipping.street}
+              name={"street"}
+              onChange={handleInputChange}
+              ref={(el) => {
+                inputRefs.current.street = el;
+              }}
+            />
+            {/* error */}
+            {shipping.streetError && (
+              <p className={"text-red-500 text-xs mt-1 mx-3"}>
+                {shipping.streetError}
+              </p>
+            )}
+          </div>
+
+          {/* exterior number */}
+          <div className={"col-span-12 sm:col-span-6"}>
+            <input
+              type="text"
+              className={`input input-border-black ${
+                shipping.numberError ? "input-error" : ""
+              }`}
+              placeholder="Número exterior*"
+              value={shipping.number}
+              name={"number"}
+              onChange={handleInputChange}
+              ref={(el) => {
+                inputRefs.current.number = el;
+              }}
+            />
+            {/* error */}
+            {shipping.numberError && (
+              <p className={"text-red-500 text-xs mt-1 mx-3"}>
+                {shipping.numberError}
+              </p>
+            )}
+          </div>
+
+          {/* interior number */}
+          <div className={"col-span-12 sm:col-span-6"}>
+            <input
+              type="text"
+              className={`input input-border-black ${
+                shipping.interiorNumberError ? "input-error" : ""
+              }`}
+              placeholder="Número interior"
+              value={shipping.interiorNumber}
+              name={"interiorNumber"}
+              onChange={handleInputChange}
+              ref={(el) => {
+                inputRefs.current.interiorNumber = el;
+              }}
+            />
+            {/* error */}
+            {shipping.interiorNumberError && (
+              <p className={"text-red-500 text-xs mt-1 mx-3"}>
+                {shipping.interiorNumberError}
+              </p>
+            )}
+          </div>
+
+          {/* zip code */}
+          <div className={"col-span-12 sm:col-span-6"}>
+            <input
+              className={`input input-border-black ${
+                shipping.zipCodeError ? "input-error" : ""
+              }`}
+              placeholder="Código postal*"
+              value={shipping.zipCode}
+              name={"zipCode"}
+              onChange={handleInputChange}
+              ref={(el) => {
+                inputRefs.current.zipCode = el;
+              }}
+              maxLength={5}
+            />
+            {/* error */}
+            {shipping.zipCodeError && (
+              <p className={"text-red-500 text-xs mt-1 mx-3"}>
+                {shipping.zipCodeError}
+              </p>
+            )}
+          </div>
+          {/* neighborhood */}
+          <div className={"col-span-12 sm:col-span-6"}>
+            <select
+              value={shipping.neighborhood}
+              className={`input input-border-black`}
+              name={"neighborhood"}
+              onChange={handleInputChange}
+            >
+              <option value={""}>Selecciona una colonia*</option>
+              {colonies.map((colony: string, index: number) => (
+                <option key={index} value={colony}>
+                  {colony}
+                </option>
+              ))}
+            </select>
+            {/* error */}
+            {shipping.neighborhoodError && (
+              <p className={"text-red-500 text-xs mt-1 mx-3"}>
+                {shipping.neighborhoodError}
+              </p>
+            )}
+          </div>
+
+          {/* state */}
+          <div className={"col-span-12 sm:col-span-6"}>
+            <input
+              type="text"
+              className={`input input-border-black ${
+                shipping.stateError ? "input-error" : ""
+              }`}
+              placeholder="Estado*"
+              value={shipping.state}
+              name={"state"}
+              onChange={handleInputChange}
+              ref={(el) => {
+                inputRefs.current.state = el;
+              }}
+            />
+            {/* error */}
+            {shipping.stateError && (
+              <p className={"text-red-500 text-xs mt-1 mx-3"}>
+                {shipping.stateError}
+              </p>
+            )}
+          </div>
+          {/* city */}
+          <div className={"col-span-12 sm:col-span-6"}>
+            <input
+              type="text"
+              className={`input input-border-black ${
+                shipping.cityError ? "input-error" : ""
+              }`}
+              placeholder="Municipio/Alcaldía*"
+              value={shipping.city}
+              name={"city"}
+              onChange={handleInputChange}
+              ref={(el) => {
+                inputRefs.current.city = el;
+              }}
+            />
+            {/* error */}
+            {shipping.cityError && (
+              <p className={"text-red-500 text-xs mt-1 mx-3"}>
+                {shipping.cityError}
+              </p>
+            )}
+          </div>
+
+          {/* complement */}
+          <div className={"col-span-12"}>
+            <input
+              type="text"
+              className={`input input-border-black ${
+                shipping.complementError ? "input-error" : ""
+              }`}
+              placeholder={`Referencia*`}
+              value={shipping.complement}
+              name={"complement"}
+              onChange={handleInputChange}
+              ref={(el) => {
+                inputRefs.current.complement = el;
+              }}
+            />
+            {/* error */}
+            {shipping.complementError && (
+              <p className={"text-red-500 text-xs mt-1 mx-3"}>
+                {shipping.complementError}
+              </p>
+            )}
+          </div>
+
+          <div className={"col-span-12 flex justify-between"}>
+            <div className="flex items-center text-white mb-2 ml-2">
+              <input
+                type="checkbox"
+                id={"myAddressAreEqual"}
+                className="form-checkbox green-check h-5 w-5 text-green-500"
+                name={"myAddressAreEqual"}
+                onChange={handleMyAddressAreEqualChange}
+              />
+              <label htmlFor={"myAddressAreEqual"}>
+                <span className={`ml-2 inline-block text-base text-black`}>
+                  Mi dirección de envío y facturación son iguales
+                </span>
+              </label>
+            </div>
+            <div>
+              <span className={`text-base text-black font-medium`}>
+                Campos Obligatorios*
+              </span>
+            </div>
+          </div>
+
+          {/* next */}
+          {!shipping.showTaxDataForm && (
+            <div className={`col-span-12`}>
+              <div className="flex justify-center">
+                <div className="button-container">
+                  <button
+                    className="btn-xl multi-border bg-black font-medium text-white disabled:opacity-50"
+                    onClick={handleNextForm}
+                    disabled={!isValidForm}
+                  >
+                    SIGUIENTE
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
+      </div>
     </div>
   );
 }

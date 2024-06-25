@@ -4,7 +4,7 @@ import { useLazyValidateImeiQuery, useValidateImeiQuery } from "@/lib/services/v
 import PlusDecoration from "@/components/PlusDecoration";
 import Image from "next/image";
 import { setSupportEsim } from "@/lib/features/plan/planSlice";
-import { setIsValidation } from "@/lib/features/shipping/shippingSlice";
+import { setIsValidation, setIsCompatibleImei } from "@/lib/features/shipping/shippingSlice";
 import { useAppDispatch } from "@/lib/hooks";
 
 
@@ -185,6 +185,7 @@ const ValidateIMEIForm: React.FC<ValidateIMEIFormProps> = ({ className, style })
         break;
       default:
         dispatch(setSupportEsim(false));
+        dispatch(setIsCompatibleImei(false));
         openModal(
           <div
             className={`flex flex-col items-center justify-center h-[500px]`}
