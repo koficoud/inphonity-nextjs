@@ -117,31 +117,23 @@ export default function ShippingForm() {
 
   useEffect(() => { 
     if (shipping.zipCode.length === 5) {
-      fetch(`https://maps.googleapis.com/maps/api/geocode/json?components=postal_code:${shipping.zipCode}|country:MX&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`)
+      fetch(`https://testinphonity.com/api/sepomex/${shipping.zipCode}`)
         .then(response => response.json())
         .then(data => {
-          if (data.status !== 'OK') {
+          if (data.length === 0) {
             dispatch(setState(''));
             dispatch(setCity(''));
             setColonies([]);
             return;
           }
-    
           let state = '';
           let city = '';
           let colonies: any[] | ((prevState: never[]) => never[]) = [];
     
-          data.results[0].address_components.forEach((component: { types: string | string[]; long_name: string; }) => {
-            if (component.types.includes('administrative_area_level_1')) {
-              state = component.long_name;
-            }
-            if (component.types.includes('locality') || component.types.includes('political')) {
-              city = component.long_name;
-            }
-          });
-
-          data.results[0].postcode_localities.forEach((colony: any) => {
-            colonies.push(colony);
+          data.forEach((component: { d_estado: string; types: string; d_ciudad: string; d_asenta: string; }) => {
+            state = component.d_estado;
+            city = component.d_ciudad;
+            colonies.push(component.d_asenta);
           });
     
           dispatch(setState(state));
